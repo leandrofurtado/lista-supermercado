@@ -1,0 +1,9 @@
+.git
+.git/**
+.gitignore
+.wrangler
+.wrangler/**
+.assetsignore
+wrangler.jsonc
+COMO-PUBLICAR.md
+README.md
