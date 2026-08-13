@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#123a28">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Supermercado">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Lista da Feira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#182a20;
+    --paper:#f6f3ea;
+    --pine:#123a28;
+    --pine-2:#0d2c1e;
+    --sage:#e7ede1;
+    --amber:#e0a92e;
+    --amber-soft:#f6e6bf;
+    --green:#28a866;
+    --green-soft:#dff3e6;
+    --line:#e5dfd0;
+    --muted:#8a9184;
+    --white:#ffffff;
+    --shadow:0 6px 20px rgba(18,58,40,.10);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;}
+  body{
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    padding-bottom:96px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  header{
+    background:linear-gradient(160deg,var(--pine) 0%,var(--pine-2) 100%);
+    color:#fff;padding:26px 22px 20px;position:sticky;top:0;z-index:20;
+    box-shadow:var(--shadow);border-radius:0 0 24px 24px;
+  }
+  .topo{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .titulo .eyebrow{font-size:.66rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:2px;}
+  .titulo h1{font-family:"Bricolage Grotesque","Inter",sans-serif;font-weight:800;font-size:1.9rem;line-height:1;margin:0;letter-spacing:-.5px;}
+  .titulo .sub{font-size:.8rem;opacity:.78;margin-top:6px;}
+
+  .ring-wrap{position:relative;width:66px;height:66px;flex:0 0 66px;}
+  .ring-wrap svg{transform:rotate(-90deg);}
+  .ring-bg{stroke:rgba(255,255,255,.18);}
+  .ring-fg{stroke:var(--amber);transition:stroke-dashoffset .5s cubic-bezier(.4,0,.2,1);}
+  .ring-txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;}
+  .ring-txt b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;font-weight:800;}
+  .ring-txt span{font-size:.6rem;opacity:.75;margin-top:1px;}
+
+  .seg{margin-top:18px;display:flex;background:rgba(255,255,255,.12);border-radius:13px;padding:4px;gap:4px;}
+  .seg button{flex:1;border:none;background:transparent;color:#fff;padding:10px 0;font-size:.84rem;font-weight:600;border-radius:10px;cursor:pointer;transition:.18s;font-family:inherit;}
+  .seg button.ativo{background:#fff;color:var(--pine);box-shadow:0 2px 6px rgba(0,0,0,.15);}
+
+  .subbar{display:flex;align-items:center;justify-content:space-between;padding:16px 22px 4px;}
+  .faltam{font-size:.9rem;font-weight:700;color:var(--pine);background:var(--sage);padding:6px 13px;border-radius:20px;}
+  .faltam.zerado{color:var(--green);}
+  .link{background:none;border:none;font-family:inherit;font-size:.8rem;font-weight:600;color:var(--muted);cursor:pointer;padding:6px 8px;border-radius:8px;display:flex;align-items:center;gap:5px;}
+  .link:active{background:var(--sage);}
+  .link svg{width:15px;height:15px;}
+
+  .grupo{margin:18px 16px 0;}
+  .grupo-head{display:flex;align-items:center;gap:8px;margin:0 0 10px 4px;}
+  .grupo-head h2{
+    font-size:.72rem;text-transform:uppercase;letter-spacing:1.4px;font-weight:800;
+    color:var(--pine);background:var(--amber-soft);
+    padding:5px 13px;border-radius:20px;margin:0;
+  }
+  .grupo-head .cont{font-size:.68rem;color:var(--pine);font-weight:700;background:var(--sage);padding:3px 9px;border-radius:20px;}
+  .ouvir{margin-left:auto;flex:0 0 auto;width:34px;height:34px;border-radius:10px;border:1.5px solid var(--pine);background:var(--white);color:var(--pine);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;}
+  .ouvir svg{width:17px;height:17px;}
+  .ouvir:active{background:var(--sage);}
+  .ouvir.on{background:var(--pine);color:#fff;border-color:var(--pine);animation:pulso 1.4s ease-in-out infinite;}
+  @keyframes pulso{0%,100%{box-shadow:0 0 0 0 rgba(18,58,40,.35);}50%{box-shadow:0 0 0 6px rgba(18,58,40,0);}}
+  .cartao{background:var(--white);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 1px 3px rgba(18,58,40,.04);}
+
+  .item{position:relative;display:flex;align-items:center;gap:14px;padding:15px 16px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;transition:background .15s,opacity .25s;}
+  .item:last-child{border-bottom:none;}
+  .item:active{background:var(--sage);}
+  .box{flex:0 0 27px;width:27px;height:27px;border:2px solid #c6cdbe;border-radius:9px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+  .box svg{width:16px;height:16px;opacity:0;transform:scale(.5);transition:all .2s;}
+  .nome{flex:1;font-size:1.02rem;font-weight:500;transition:.2s;}
+  .qtd{font-size:.74rem;color:var(--pine);background:var(--amber-soft);padding:3px 10px;border-radius:20px;font-weight:700;white-space:nowrap;}
+  .apagar{flex:0 0 auto;background:none;border:none;color:#c9c2b3;padding:4px;cursor:pointer;display:flex;}
+  .apagar svg{width:17px;height:17px;}
+  .apagar:active{color:#d05a4a;}
+
+  /* destaque item adicionado pelo usuário */
+  .item.extra::before{content:'';position:absolute;left:0;top:9px;bottom:9px;width:3px;background:var(--amber);border-radius:0 3px 3px 0;}
+  .item.extra .nome{font-weight:600;}
+
+  .item.feito{opacity:.6;}
+  .item.feito .box{background:var(--green);border-color:var(--green);box-shadow:0 2px 6px rgba(40,168,102,.35);}
+  .item.feito .box svg{opacity:1;transform:scale(1);}
+  .item.feito .nome{text-decoration:line-through;color:var(--muted);}
+  .item.feito .qtd{background:var(--green-soft);color:var(--green);}
+  .item.feito.extra::before{background:var(--green);opacity:.5;}
+  body.ocultar .item.feito{display:none;}
+
+  .dock{position:fixed;left:0;right:0;bottom:0;z-index:30;}
+  .sugestoes{background:var(--white);border:1px solid var(--line);border-bottom:none;border-radius:16px 16px 0 0;margin:0 10px;max-height:250px;overflow-y:auto;box-shadow:0 -8px 26px rgba(18,58,40,.14);}
+  .sugestoes:empty{display:none;}
+  .sug{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--line);}
+  .sug:last-child{border-bottom:none;}
+  .sug:active{background:var(--sage);}
+  .sug .s-nome{flex:1;font-size:1rem;font-weight:500;}
+  .sug .s-cat{font-size:.66rem;color:var(--pine);background:var(--sage);padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;}
+  .sug .s-tag{font-size:.68rem;color:var(--green);font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:4px;}
+  .sug .s-tag svg{width:13px;height:13px;}
+
+  .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(8px);background:var(--pine);color:#fff;padding:13px 18px;border-radius:14px;font-size:.9rem;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:40;display:flex;align-items:center;gap:9px;max-width:86%;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast svg{width:18px;height:18px;flex:0 0 18px;}
+
+  .addbar{background:var(--white);border-top:1px solid var(--line);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;gap:8px;box-shadow:0 -6px 20px rgba(18,58,40,.06);}
+  .addbar input{border:1px solid var(--line);background:var(--paper);border-radius:13px;padding:13px 14px;font-size:1rem;font-family:inherit;color:var(--ink);outline:none;transition:border .15s;}
+  .addbar input.nome-in{flex:1;min-width:0;}
+  .addbar input.qtd-in{flex:0 0 56px;width:56px;text-align:center;padding-left:6px;padding-right:6px;-moz-appearance:textfield;}
+  .addbar input.qtd-in::-webkit-outer-spin-button,.addbar input.qtd-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .addbar input:focus{border-color:var(--pine);}
+  .addbar button{flex:0 0 auto;border:none;background:var(--pine);color:#fff;width:52px;border-radius:13px;font-size:1.6rem;font-weight:400;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;}
+  .addbar button:active{background:var(--pine-2);transform:scale(.96);}
+  .acoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 2px;}
+  .acao{display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 8px;border:none;border-radius:14px;font-family:inherit;font-size:.88rem;font-weight:700;cursor:pointer;transition:transform .12s,filter .15s;}
+  .acao:active{transform:scale(.97);filter:brightness(.96);}
+  .acao svg{width:17px;height:17px;flex:0 0 17px;}
+  .acao.foto{background:var(--pine);color:#fff;box-shadow:0 4px 12px rgba(18,58,40,.22);}
+  .acao.exp{background:var(--amber);color:#4a3400;box-shadow:0 4px 12px rgba(224,169,46,.4);}
+  .acao.imp{background:var(--white);color:var(--pine);border:1.6px solid var(--pine);}
+  .acao.nova{background:var(--white);color:#b5533f;border:1.6px solid #e6bcb2;}
+
+  .vazio{text-align:center;color:var(--muted);font-size:.95rem;line-height:1.6;padding:56px 30px;}
+
+  .modal{position:fixed;inset:0;background:rgba(18,42,32,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:24px;}
+  .modal.show{display:flex;}
+  .modal-card{background:var(--white);border-radius:20px;padding:24px 22px;max-width:340px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+  .modal-card h3{margin:0 0 8px;font-family:"Bricolage Grotesque","Inter",sans-serif;font-size:1.2rem;color:var(--ink);}
+  .modal-card p{margin:0 0 20px;font-size:.92rem;color:var(--muted);line-height:1.5;}
+  .modal-btns{display:flex;gap:10px;}
+  .modal-btns button{flex:1;padding:13px;border-radius:12px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;border:none;}
+  .mb-cancel{background:var(--sage);color:var(--pine);}
+  .mb-ok{background:#d0533f;color:#fff;}
+  .mb-ok:disabled{opacity:.5;}
+  .mb-add{background:var(--pine);color:#fff;}
+
+  .modal-foto{max-width:400px;}
+  .foto-status{display:flex;flex-direction:column;align-items:center;gap:12px;padding:26px 0;color:var(--muted);font-size:.92rem;text-align:center;line-height:1.5;}
+  .foto-status.loading::before{content:'';width:28px;height:28px;border:3px solid var(--sage);border-top-color:var(--pine);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .foto-lista{max-height:44vh;overflow-y:auto;margin:6px -2px 18px;border-top:1px solid var(--line);}
+  .foto-item{display:flex;align-items:center;gap:11px;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer;opacity:.45;transition:opacity .15s;}
+  .foto-item.on{opacity:1;}
+  .fbox{flex:0 0 24px;width:24px;height:24px;border:2px solid #c6cdbe;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+  .fbox svg{width:15px;height:15px;opacity:0;}
+  .foto-item.on .fbox{background:var(--green);border-color:var(--green);}
+  .foto-item.on .fbox svg{opacity:1;}
+  .fnome{flex:1;font-size:1rem;font-weight:500;}
+  .fcat{font-size:.64rem;color:var(--pine);background:var(--sage);padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;}
+
+  .falar-wrap{padding:14px 16px 0;}
+  .falar-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;padding:14px;border:none;border-radius:14px;background:var(--pine);color:#fff;font-family:inherit;font-weight:700;font-size:.95rem;cursor:pointer;box-shadow:var(--shadow);transition:transform .12s,filter .15s;}
+  .falar-btn:active{transform:scale(.98);}
+  .falar-btn svg{width:20px;height:20px;}
+
+  .mic-big{width:88px;height:88px;border-radius:50%;border:none;background:var(--sage);color:var(--pine);display:flex;align-items:center;justify-content:center;margin:2px auto 12px;cursor:pointer;transition:background .2s,color .2s;}
+  .mic-big svg{width:36px;height:36px;}
+  .mic-big.on{background:var(--green);color:#fff;animation:pulseMic 1.3s infinite;}
+  @keyframes pulseMic{0%{box-shadow:0 0 0 0 rgba(40,168,102,.45);}70%{box-shadow:0 0 0 18px rgba(40,168,102,0);}100%{box-shadow:0 0 0 0 rgba(40,168,102,0);}}
+  .mic-status{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:6px;line-height:1.4;min-height:18px;}
+  .mic-interim{text-align:center;color:var(--pine);font-style:italic;font-size:.92rem;min-height:20px;margin-bottom:6px;}
+  .falados{max-height:36vh;overflow-y:auto;margin:6px -2px 16px;border-top:1px solid var(--line);}
+  .falado-item{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line);}
+  .falado-item .fnome{flex:1;font-size:1rem;font-weight:500;}
+  .falado-x{flex:0 0 auto;width:30px;height:30px;border:none;background:none;color:#c0392b;cursor:pointer;font-size:1.4rem;line-height:1;border-radius:8px;}
+  .falados-vazio{text-align:center;color:var(--muted);font-size:.88rem;padding:22px 0;}
+</style>
+</head>
+<body>
+<header>
+  <div class="topo">
+    <div class="titulo">
+      <div class="eyebrow">Lista de compras</div>
+      <h1>Supermercado</h1>
+      <div class="sub" id="sub">Toque pra marcar o que já pegou</div>
+    </div>
+    <div class="ring-wrap">
+      <svg width="66" height="66" viewBox="0 0 66 66">
+        <circle class="ring-bg" cx="33" cy="33" r="28" fill="none" stroke-width="6"/>
+        <circle id="ring" class="ring-fg" cx="33" cy="33" r="28" fill="none" stroke-width="6"
+                stroke-linecap="round" stroke-dasharray="175.9" stroke-dashoffset="175.9"/>
+      </svg>
+      <div class="ring-txt"><b id="ringNum">0</b><span id="ringTot">de 0</span></div>
+    </div>
+  </div>
+  <div class="seg">
+    <button id="btnCat" class="ativo" onclick="setModo('categoria')">Por categoria</button>
+    <button id="btnAlf" onclick="setModo('alfabetico')">Alfabético</button>
+  </div>
+</header>
+
+<div class="subbar">
+  <div class="faltam" id="faltam">Faltam <b>0</b> itens</div>
+  <button class="link" id="btnOcultar" onclick="toggleOcultar()">
+    <svg id="olho" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+    <span id="txtOcultar">Ocultar comprados</span>
+  </button>
+</div>
+
+<div class="falar-wrap">
+  <button class="falar-btn" onclick="abrirFalar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    Falar itens
+  </button>
+</div>
+<div class="acoes">
+  <button class="acao foto" onclick="importarFoto()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    Importar foto
+  </button>
+  <button class="acao imp" onclick="importarPDF()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Importar PDF
+  </button>
+  <button class="acao exp" onclick="exportarPDF()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    Exportar PDF
+  </button>
+  <button class="acao nova" onclick="novaLista()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Nova lista
+  </button>
+</div>
+<input id="fileInputPDF" type="file" accept="application/pdf,.pdf" style="display:none" onchange="lerArquivoPDF(event)">
+<input id="fileInputFoto" type="file" accept="image/*" style="display:none" onchange="lerImagem(event)">
+
+<div id="lista"></div>
+
+<div id="toast" class="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <span class="t-txt"></span>
+</div>
+
+<div id="modalFoto" class="modal">
+  <div class="modal-card modal-foto">
+    <h3>Itens encontrados</h3>
+    <div id="fotoStatus" class="foto-status loading">Lendo imagem...</div>
+    <div id="fotoLista" class="foto-lista"></div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="fecharFoto()">Cancelar</button>
+      <button class="mb-ok mb-add" id="btnAddFoto" onclick="confirmarFoto()" style="display:none">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalNova" class="modal">
+  <div class="modal-card">
+    <h3>Começar nova lista?</h3>
+    <p>Todos os itens serão removidos e a lista ficará vazia para você montar uma nova compra.</p>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="fecharConfirm()">Cancelar</button>
+      <button class="mb-ok" onclick="confirmarNova()">Nova lista</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalFalar" class="modal">
+  <div class="modal-card modal-foto">
+    <h3>Falar itens</h3>
+    <button id="micBig" class="mic-big" onclick="toggleMic()" aria-label="Microfone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </button>
+    <div id="micStatus" class="mic-status">Toque no microfone e fale os itens, um de cada vez</div>
+    <div id="micInterim" class="mic-interim"></div>
+    <div id="faladosLista" class="falados"></div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="fecharFalar()">Cancelar</button>
+      <button class="mb-add" id="btnEnviarFalar" onclick="enviarFalados()">Enviar (0)</button>
+    </div>
+  </div>
+</div>
+
+<div class="dock">
+  <div id="sugestoes" class="sugestoes"></div>
+  <div class="addbar">
+    <input id="novoItem" class="nome-in" type="text" placeholder="Adicionar item..." autocomplete="off"
+           oninput="onInput()" onkeydown="if(event.key==='Enter')adicionar()">
+    <input id="novoQtd" class="qtd-in" type="number" min="1" inputmode="numeric" placeholder="1"
+           onkeydown="if(event.key==='Enter')adicionar()">
+    <button onclick="adicionar()" aria-label="Adicionar">+</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
+<script>
+const CIRC = 175.9;
+
+const dadosBase = [
+  { grupo:"Mercearia", itens:[
+    { nome:"Feijão cristal", qtd:"1 pacote" },
+    { nome:"Páprica doce", qtd:1 },
+    { nome:"Páprica picante", qtd:1 },
+    { nome:"Biscoito", qtd:1 },
+  ]},
+  { grupo:"Hortifrúti", itens:[
+    { nome:"Tomate cereja", qtd:1 },
+    { nome:"Chuchu", qtd:2 },
+    { nome:"Abóbora", qtd:1 },
+    { nome:"Repolho", qtd:1 },
+    { nome:"Batata", qtd:6 },
+    { nome:"Cenoura", qtd:2 },
+    { nome:"Banana prata", qtd:1 },
+    { nome:"Banana da terra", qtd:3 },
+    { nome:"Batata doce", qtd:2 },
+    { nome:"Inhame", qtd:2 },
+  ]},
+  { grupo:"Padaria", itens:[
+    { nome:"Pão", qtd:"1 pacote" },
+  ]},
+  { grupo:"Frios e laticínios", itens:[
+    { nome:"Queijo", qtd:1 },
+  ]},
+  { grupo:"Açougue", itens:[
+    { nome:"Fígado", qtd:"1 kg" },
+    { nome:"Bife de alcatra", qtd:"1,2 kg" },
+    { nome:"Coxinha da asa", qtd:"1 pacote" },
+    { nome:"Sobrecoxa", qtd:"1 pacote" },
+    { nome:"Alcatra (carne de sol)", qtd:"2 kg" },
+    { nome:"Costelinha de porco", qtd:"2 kg" },
+  ]},
+  { grupo:"Higiene", itens:[
+    { nome:"Sabonete Protex", qtd:4 },
+    { nome:"Creme dental", qtd:1 },
+  ]},
+];
+
+// classificação automática de itens novos
+const CATS = [
+  { cat:"Hortifrúti", p:["tomate","cebola","alho","batata","cenoura","alface","couve","brocolis","brócolis","abobrinha","abobora","abóbora","pimentao","pimentão","pepino","mandioca","aipim","macaxeira","inhame","cheiro verde","salsa","cebolinha","coentro","rucula","rúcula","espinafre","repolho","beterraba","chuchu","quiabo","berinjela","milho verde","alecrim","champignon","champignom","cogumelo","verdura","legume","hortalica","hortaliça","banana","maca","maçã","laranja","limao","limão","mamao","mamão","manga","abacaxi","uva","melancia","melao","melão","morango","abacate","pera","pessego","pêssego","kiwi","goiaba","maracuja","maracujá","fruta","gengibre"] },
+  { cat:"Açougue", p:["carne","boi","bovina","frango","galinha","peixe","tilapia","tilápia","figado","fígado","linguica","linguiça","salsicha","bacon","costela","costelinha","picanha","alcatra","patinho","maminha","fraldinha","cupim","acem","acém","moida","moída","file","filé","coxa","coxinha da asa","sobrecoxa","peito de frango","asa","asinha","pernil","porco","suina","suína","bisteca","camarao","camarão","cordeiro","carneiro"] },
+  { cat:"Frios e laticínios", p:["queijo","mussarela","muçarela","mucarela","presunto","mortadela","salame","iogurte","requeijao","requeijão","nata","creme de leite","leite condensado","margarina","ricota","catupiry","parmesao","parmesão","provolone","peito de peru","apresuntado","leite"] },
+  { cat:"Bebidas", p:["agua","água","refrigerante","refri","coca","guarana","guaraná","suco","cerveja","vinho","energetico","energético","cha","chá","isotonico","isotônico"] },
+  { cat:"Padaria", p:["pao","pão","paozinho","pãozinho","bisnaga","baguete","bolo","rosca","croissant","sonho","broa","torta"] },
+  { cat:"Higiene", p:["sabonete","shampoo","xampu","condicionador","creme dental","pasta de dente","escova de dente","papel higienico","papel higiênico","fralda","absorvente","desodorante","cotonete","lamina","lâmina","gilete","hidratante","algodao","algodão","lenco","lenço"] },
+  { cat:"Limpeza", p:["detergente","sabao","sabão","desinfetante","amaciante","agua sanitaria","água sanitária","cloro","alvejante","esponja","limpa","multiuso","lustra","cera","saco de lixo","saco para lixo","papel toalha","guardanapo","desengordurante"] },
+  { cat:"Mercearia", p:["arroz","feijao","feijão","macarrao","macarrão","cafe","café","acucar","açúcar","sal","acafrao","açafrão","chimichurri","paprica","páprica","oleo","óleo","azeite","farinha","fuba","fubá","amido","fermento","molho","extrato","milho","ervilha","atum","sardinha","cereal","aveia","tapioca","vinagre","tempero","caldo","biscoito","bolacha","miojo","gelatina","pudim","chocolate","achocolatado","leite em po","leite em pó","batata palha","granola","mel","geleia","ketchup","maionese","mostarda","canela","oregano","orégano"] },
+];
+function categorizar(nome){
+  const n = nome.toLowerCase();
+  for(const c of CATS){ for(const w of c.p){ if(n.indexOf(w)>=0) return c.cat; } }
+  return "Outros";
+}
+const ORDEM = ["Limpeza","Mercearia","Hortifrúti","Padaria","Frios e laticínios","Açougue","Bebidas","Higiene","Outros"];
+
+// dicionário de nomes padronizados para as sugestões
+const SUGESTOES = [];
+(function(){
+  const dic = {
+    "Hortifrúti":["Tomate","Tomate cereja","Cebola","Alho","Batata","Batata doce","Inhame","Cenoura","Alface","Couve","Brócolis","Abobrinha","Abóbora","Chuchu","Repolho","Pimentão","Pepino","Mandioca","Cheiro verde","Salsa","Cebolinha","Coentro","Rúcula","Espinafre","Beterraba","Quiabo","Berinjela","Milho verde","Alecrim","Champignon","Cogumelo","Banana","Banana prata","Banana da terra","Maçã","Laranja","Limão","Mamão","Manga","Abacaxi","Uva","Melancia","Melão","Morango","Abacate","Pera","Goiaba","Maracujá","Gengibre"],
+    "Mercearia":["Arroz","Feijão","Feijão cristal","Macarrão","Café","Açúcar","Sal","Sal rosa","Açafrão","Chimichurri","Páprica doce","Páprica picante","Óleo","Azeite","Farinha de trigo","Farinha de mandioca","Fubá","Amido de milho","Fermento","Molho de tomate","Extrato de tomate","Milho em conserva","Ervilha","Atum","Sardinha","Aveia","Tapioca","Vinagre","Biscoito","Bolacha","Miojo","Gelatina","Chocolate","Achocolatado","Leite em pó","Batata palha","Granola","Mel","Ketchup","Maionese","Mostarda","Orégano","Canela"],
+    "Frios e laticínios":["Leite","Manteiga","Margarina","Queijo","Mussarela","Presunto","Mortadela","Iogurte","Requeijão","Creme de leite","Leite condensado","Ricota"],
+    "Açougue":["Carne","Carne moída","Fígado","Picanha","Alcatra","Bife de alcatra","Costela","Costelinha de porco","Frango","Coxinha da asa","Coxa de frango","Sobrecoxa","Peito de frango","Linguiça","Salsicha","Bacon","Peixe","Tilápia","Camarão","Pernil"],
+    "Bebidas":["Água","Refrigerante","Suco","Cerveja","Vinho","Guaraná","Coca-cola","Chá"],
+    "Padaria":["Pão","Pão de forma","Pão francês","Bolo","Rosca","Croissant"],
+    "Higiene":["Sabonete","Shampoo","Condicionador","Creme dental","Papel higiênico","Fralda","Absorvente","Desodorante","Cotonete","Lâmina de barbear","Algodão"],
+    "Limpeza":["Detergente","Desinfetante","Amaciante","Sabão em pó","Sabão líquido de lavar roupa","Água sanitária","Esponja","Multiuso","Saco de lixo","Papel toalha","Guardanapo","Cera","Alvejante"]
+  };
+  Object.keys(dic).forEach(function(cat){
+    dic[cat].forEach(function(nome){ SUGESTOES.push({nome:nome, cat:cat}); });
+  });
+})();
+
+function normal(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+
+function itemExiste(nome){
+  const k = chave(nome);
+  const naBaseAtiva = removidos.indexOf(k)<0 &&
+    dadosBase.some(function(g){return g.itens.some(function(it){return chave(it.nome)===k;});});
+  return naBaseAtiva || extras.some(function(it){return chave(it.nome)===k;});
+}
+
+function buscar(q){
+  const n = normal(q.trim());
+  if(n.length < 2) return [];
+  const comeca=[], contem=[];
+  SUGESTOES.forEach(function(s){
+    const sn = normal(s.nome);
+    if(sn.indexOf(n)===0) comeca.push(s);
+    else if(sn.indexOf(n)>=0) contem.push(s);
+  });
+  return comeca.concat(contem).slice(0,6);
+}
+
+const tagOk = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>';
+
+function onInput(){
+  const q = document.getElementById('novoItem').value;
+  const box = document.getElementById('sugestoes');
+  const lista = buscar(q);
+  box.innerHTML = '';
+  lista.forEach(function(s){
+    const jaTem = itemExiste(s.nome);
+    const el = document.createElement('div');
+    el.className = 'sug';
+    el.innerHTML = '<span class="s-nome">'+s.nome+'</span>' +
+      (jaTem ? '<span class="s-tag">'+tagOk+'na lista</span>'
+             : '<span class="s-cat">'+s.cat+'</span>');
+    el.onmousedown = function(ev){ ev.preventDefault(); };
+    el.onclick = function(){ selecionarSugestao(s.nome, jaTem); };
+    box.appendChild(el);
+  });
+}
+
+function selecionarSugestao(nome, jaTem){
+  const inp = document.getElementById('novoItem');
+  document.getElementById('sugestoes').innerHTML = '';
+  if(jaTem){
+    toast(nome + ' já está na lista');
+    inp.value = '';
+  } else {
+    inp.value = nome;
+    document.getElementById('novoQtd').focus();
+  }
+}
+
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.querySelector('.t-txt').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+function novaLista(){ document.getElementById('modalNova').classList.add('show'); }
+function fecharConfirm(){ document.getElementById('modalNova').classList.remove('show'); }
+function confirmarNova(){
+  pararFala();
+  removidos = [];
+  dadosBase.forEach(function(g){ g.itens.forEach(function(it){ removidos.push(chave(it.nome)); }); });
+  extras = [];
+  Object.keys(estado).forEach(function(k){ delete estado[k]; });
+  fecharConfirm();
+  salvar(); render();
+  toast('Nova lista criada');
+}
+
+// ---- Leitura por voz (fala os itens da categoria em loop até pausar) ----
+let falandoId = null;
+let wakeLock = null;
+
+async function pedirWake(){
+  try{ if('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); } }catch(e){}
+}
+async function soltarWake(){
+  try{ if(wakeLock){ await wakeLock.release(); wakeLock = null; } }catch(e){}
+}
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'visible' && falandoId){ pedirWake(); }
+});
+
+function vozPT(){
+  try{
+    const vs = window.speechSynthesis.getVoices() || [];
+    return vs.find(function(v){return /pt[-_]?br/i.test(v.lang);}) ||
+           vs.find(function(v){return /^pt/i.test(v.lang);}) || null;
+  }catch(e){ return null; }
+}
+
+function textoItemFala(it){
+  let t = it.nome;
+  const q = it.qtd;
+  if(typeof q === 'number'){ if(q>1) t += ', '+q; }
+  else if(q){ t += ', '+String(q).replace(/\bkg\b/gi,'quilos'); }
+  return t;
+}
+
+function pararFala(){
+  falandoId = null;
+  soltarWake();
+  try{ window.speechSynthesis.cancel(); }catch(e){}
+  const bs = document.querySelectorAll('.ouvir');
+  for(let i=0;i<bs.length;i++){ bs[i].classList.remove('on'); bs[i].innerHTML = iconePlay; }
+}
+
+function ouvirGrupo(grupoNome, btn){
+  if(!('speechSynthesis' in window)){ toast('Seu aparelho não suporta leitura por voz'); return; }
+  if(falandoId === grupoNome){ pararFala(); return; }   // já tocando este → pausa
+  pararFala();                                          // para qualquer outro
+  falandoId = grupoNome;
+  pedirWake();                                          // mantém a tela acesa
+  btn.classList.add('on'); btn.innerHTML = iconePause;
+  falarLoop(grupoNome);
+}
+
+function falarLoop(grupoNome){
+  if(falandoId !== grupoNome) return;
+  const g = construir().find(function(x){return x.grupo===grupoNome;});
+  const itens = g ? ordena(g.itens).filter(function(it){return !estado[chave(it.nome)];}) : [];
+  const fila = [grupoNome + '.'];
+  if(itens.length){ itens.forEach(function(it){ fila.push(textoItemFala(it)); }); }
+  else { fila.push('Tudo comprado.'); }
+  falarFila(grupoNome, fila, 0);
+}
+
+function falarFila(grupoNome, fila, i){
+  if(falandoId !== grupoNome) return;
+  if(i >= fila.length){                                   // fim da categoria → repete
+    setTimeout(function(){ falarLoop(grupoNome); }, 1000);
+    return;
+  }
+  const u = new SpeechSynthesisUtterance(fila[i]);
+  u.lang = 'pt-BR'; u.rate = 0.8;
+  const v = vozPT(); if(v) u.voice = v;
+  u.onend = function(){
+    if(falandoId !== grupoNome) return;
+    setTimeout(function(){ falarFila(grupoNome, fila, i+1); }, 1000);   // pausa de 1s entre itens
+  };
+  try{ window.speechSynthesis.speak(u); }catch(e){}
+}
+
+const checkSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>';
+const lixoSVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+const iconePlay  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+const iconePause = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+
+const estado = {};
+let extras = [];
+let removidos = [];
+let modo = 'categoria';
+let ocultar = false;
+let totalItens = 0;
+let jaComemorou = false;
+
+function chave(nome){ return nome.toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g,''); }
+
+async function salvar(){
+  const payload = JSON.stringify({estado, extras, removidos, modo, ocultar});
+  try{ if(window.storage && window.storage.set){ await window.storage.set('lista-feira', payload); return; } }catch(e){}
+  try{ localStorage.setItem('lista-feira', payload); }catch(e){}
+}
+async function carregar(){
+  let raw = null;
+  try{ if(window.storage && window.storage.get){ const r = await window.storage.get('lista-feira'); if(r && r.value) raw = r.value; } }catch(e){}
+  if(!raw){ try{ raw = localStorage.getItem('lista-feira'); }catch(e){} }
+  if(raw){
+    try{
+      const d = JSON.parse(raw);
+      Object.assign(estado, d.estado||{});
+      extras = (d.extras||[]).map(function(it){
+        if(!it.categoria) it.categoria = categorizar(it.nome);
+        return it;
+      });
+      removidos = d.removidos || [];
+      modo = d.modo||'categoria';
+      ocultar = !!d.ocultar;
+    }catch(e){}
+  }
+}
+
+function construir(){
+  const map = {};
+  dadosBase.forEach(function(g){ map[g.grupo] = g.itens.filter(function(it){ return removidos.indexOf(chave(it.nome))<0; }); });
+  extras.forEach(function(it){
+    const cat = it.categoria || categorizar(it.nome);
+    if(!map[cat]) map[cat] = [];
+    map[cat].push(it);
+  });
+  const grupos = [];
+  ORDEM.forEach(function(c){ if(map[c] && map[c].length){ grupos.push({grupo:c, itens:map[c]}); delete map[c]; } });
+  Object.keys(map).forEach(function(c){ if(map[c] && map[c].length) grupos.push({grupo:c, itens:map[c]}); });
+  return grupos;
+}
+
+function badgeTxt(it){
+  if(it.qtd === undefined || it.qtd === null || it.qtd === '') return '';
+  return String(it.qtd);
+}
+
+function criarItem(it){
+  const key = chave(it.nome);
+  const feito = !!estado[key];
+  const bt = badgeTxt(it);
+  const row = document.createElement('div');
+  row.className = 'item' + (feito ? ' feito':'') + (it.extra ? ' extra':'');
+  row.innerHTML =
+    '<div class="box">'+checkSVG+'</div>' +
+    '<div class="nome">'+it.nome+'</div>' +
+    (bt ? '<div class="qtd">'+bt+'</div>' : '') +
+    '<button class="apagar" aria-label="Remover">'+lixoSVG+'</button>';
+  row.onclick = function(e){
+    if(e.target.closest('.apagar')){ removerItem(it); return; }
+    estado[key] = !estado[key];
+    salvar(); render();
+  };
+  return row;
+}
+
+function ordena(itens){
+  const a=[], b=[];
+  itens.forEach(function(it){ (estado[chave(it.nome)]?b:a).push(it); });
+  return a.concat(b);
+}
+
+function render(){
+  const lista = document.getElementById('lista');
+  lista.innerHTML = '';
+  totalItens = 0;
+
+  let grupos;
+  if(modo === 'categoria'){
+    grupos = construir();
+  } else {
+    const todos = construir().flatMap(function(g){return g.itens;})
+      .sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');});
+    grupos = [{ grupo:"Todos os itens · A–Z", itens:todos }];
+  }
+
+  grupos.forEach(function(g){
+    const total = g.itens.length;
+    const feitos = g.itens.filter(function(it){return estado[chave(it.nome)];}).length;
+    totalItens += total;
+
+    const sec = document.createElement('div');
+    sec.className = 'grupo';
+    const head = document.createElement('div');
+    head.className = 'grupo-head';
+    const tocando = (falandoId === g.grupo);
+    head.innerHTML = '<h2>'+g.grupo+'</h2><span class="cont">'+feitos+'/'+total+'</span>' +
+      '<button class="ouvir'+(tocando?' on':'')+'" aria-label="Ouvir '+g.grupo+'">'+(tocando?iconePause:iconePlay)+'</button>';
+    head.querySelector('.ouvir').onclick = function(){ ouvirGrupo(g.grupo, this); };
+    sec.appendChild(head);
+
+    const card = document.createElement('div');
+    card.className = 'cartao';
+    ordena(g.itens).forEach(function(it){ card.appendChild(criarItem(it)); });
+    sec.appendChild(card);
+    lista.appendChild(sec);
+  });
+
+  if(!lista.children.length){
+    lista.innerHTML = '<div class="vazio">Sua lista está vazia.<br>Adicione itens no campo abaixo 👇</div>';
+  }
+
+  document.getElementById('btnCat').classList.toggle('ativo', modo==='categoria');
+  document.getElementById('btnAlf').classList.toggle('ativo', modo==='alfabetico');
+  document.body.classList.toggle('ocultar', ocultar);
+  atualizar();
+}
+
+function comemorar(){
+  // vibração leve (se o aparelho permitir)
+  try{ if(navigator.vibrate) navigator.vibrate([40,60,40]); }catch(e){}
+
+  const cv = document.createElement('canvas');
+  cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+  document.body.appendChild(cv);
+  const ctx = cv.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = window.innerWidth, H = window.innerHeight;
+  cv.width = W*dpr; cv.height = H*dpr; ctx.scale(dpr, dpr);
+
+  const cores = ['#28a866','#e0a92e','#123a28','#ff5b5b','#3aa0ff','#ff9ecb','#ffd93b'];
+  const parts = [];
+  function estourar(cx, cy, n){
+    for(let i=0;i<n;i++){
+      const ang = Math.random()*Math.PI*2;
+      const vel = 4 + Math.random()*7;
+      parts.push({
+        x:cx, y:cy,
+        vx:Math.cos(ang)*vel,
+        vy:Math.sin(ang)*vel - 3,
+        g:0.14 + Math.random()*0.1,
+        s:6 + Math.random()*6,
+        cor:cores[(Math.random()*cores.length)|0],
+        rot:Math.random()*Math.PI,
+        vr:(Math.random()-0.5)*0.3,
+        vida:1
+      });
+    }
+  }
+  // três estouros em pontos diferentes, com pequeno atraso
+  estourar(W*0.5, H*0.42, 90);
+  setTimeout(function(){ estourar(W*0.25, H*0.35, 60); }, 180);
+  setTimeout(function(){ estourar(W*0.75, H*0.35, 60); }, 340);
+
+  let frames = 0;
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+    let vivos = 0;
+    for(let i=0;i<parts.length;i++){
+      const p = parts[i];
+      if(p.vida <= 0) continue;
+      p.vx *= 0.99;
+      p.vy += p.g;
+      p.x += p.vx; p.y += p.vy;
+      p.rot += p.vr;
+      if(p.y > H + 40) p.vida = 0;
+      if(p.vida <= 0) continue;
+      vivos++;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.cor;
+      ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s*0.6);
+      ctx.restore();
+    }
+    frames++;
+    if(vivos > 0 && frames < 400){ requestAnimationFrame(tick); }
+    else { cv.remove(); }
+  }
+  requestAnimationFrame(tick);
+}
+
+function atualizar(){
+  const feitos = Object.keys(estado).filter(function(k){return estado[k];}).length;
+  const restam = Math.max(totalItens - feitos, 0);
+  const pct = totalItens ? feitos/totalItens : 0;
+  document.getElementById('ring').style.strokeDashoffset = CIRC*(1-pct);
+  document.getElementById('ringNum').textContent = feitos;
+  document.getElementById('ringTot').textContent = 'de '+totalItens;
+
+  const faltam = document.getElementById('faltam');
+  if(restam === 0 && totalItens > 0){
+    faltam.classList.add('zerado');
+    faltam.innerHTML = '<b>Tudo no carrinho! 🎉</b>';
+    document.getElementById('sub').textContent = 'Compra completa';
+    if(!jaComemorou){ jaComemorou = true; comemorar(); }
+  } else {
+    faltam.classList.remove('zerado');
+    faltam.innerHTML = 'Faltam <b>'+restam+'</b> '+(restam===1?'item':'itens');
+    document.getElementById('sub').textContent = 'Toque pra marcar o que já pegou';
+    jaComemorou = false;
+  }
+}
+
+function setModo(m){ modo = m; salvar(); render(); }
+
+function toggleOcultar(){
+  ocultar = !ocultar;
+  document.getElementById('txtOcultar').textContent = ocultar ? 'Mostrar comprados' : 'Ocultar comprados';
+  const olho = document.getElementById('olho');
+  olho.innerHTML = ocultar
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>';
+  salvar(); render();
+}
+
+function b64enc(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64dec(b64){ return decodeURIComponent(escape(atob(b64))); }
+
+function exportarPDF(){
+  if(!(window.jspdf && window.jspdf.jsPDF)){ toast('PDF ainda carregando, tente de novo'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  const M=48, W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
+  let y=M+6;
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(22); doc.setTextColor(18,58,40);
+  doc.text('Supermercado', M, y); y+=10;
+  doc.setDrawColor(224,169,46); doc.setLineWidth(2.5); doc.line(M,y,M+64,y); y+=22;
+  const dt=new Date();
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(130,140,130);
+  doc.text('Gerada em '+dt.toLocaleDateString('pt-BR')+' às '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}), M, y);
+  y+=26;
+
+  construir().forEach(function(g){
+    if(y > H-M-46){ doc.addPage(); y=M+6; }
+    doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(18,58,40);
+    doc.text(g.grupo.toUpperCase(), M, y); y+=7;
+    doc.setDrawColor(230,224,208); doc.setLineWidth(.7); doc.line(M,y,W-M,y); y+=17;
+
+    ordena(g.itens).forEach(function(it){
+      if(y > H-M-14){ doc.addPage(); y=M+6; }
+      const feito = !!estado[chave(it.nome)];
+      const cx=M, cy=y-9;
+      doc.setDrawColor(feito?40:170, feito?168:170, feito?102:170); doc.setLineWidth(1);
+      doc.roundedRect(cx, cy, 12, 12, 2.5, 2.5);
+      if(feito){
+        doc.setDrawColor(40,168,102); doc.setLineWidth(1.7);
+        doc.line(cx+2.5,cy+6.5,cx+5,cy+9.2); doc.line(cx+5,cy+9.2,cx+10,cy+2.8);
+      }
+      doc.setFont('helvetica','normal'); doc.setFontSize(11);
+      doc.setTextColor(feito?150:35, feito?150:35, feito?150:35);
+      doc.text(it.nome, M+22, y);
+      const qt = badgeTxt(it);
+      if(qt){ doc.setTextColor(150,110,30); doc.text('('+qt+')', W-M, y, {align:'right'}); }
+      y+=20;
+    });
+    y+=10;
+  });
+
+  // dados embutidos (invisíveis) para reimportação exata
+  const payload = 'LSDATA::' + b64enc(JSON.stringify({ v:1, estado:estado, extras:extras }));
+  doc.setProperties({ title:'Supermercado', subject: payload, creator:'App Supermercado' });
+
+  doc.save('lista-supermercado.pdf');
+  toast('PDF exportado');
+}
+
+let detectados = [];
+
+function importarFoto(){ document.getElementById('fileInputFoto').click(); }
+function abrirFoto(){ document.getElementById('modalFoto').classList.add('show'); }
+function fecharFoto(){ document.getElementById('modalFoto').classList.remove('show'); }
+
+async function lerImagem(ev){
+  const file = ev.target.files && ev.target.files[0];
+  ev.target.value = '';
+  if(!file) return;
+  if(!window.Tesseract){ toast('Leitor de imagem carregando, tente de novo'); return; }
+  const status = document.getElementById('fotoStatus');
+  abrirFoto();
+  status.className = 'foto-status loading';
+  status.textContent = 'Lendo imagem... 0%';
+  document.getElementById('fotoLista').innerHTML = '';
+  document.getElementById('btnAddFoto').style.display = 'none';
+  try{
+    const result = await Tesseract.recognize(file, 'por', {
+      logger:function(m){
+        if(m.status==='recognizing text'){
+          status.textContent = 'Lendo imagem... '+Math.round(m.progress*100)+'%';
+        }
+      }
+    });
+    detectados = parseItens(result.data.text || '');
+    mostrarDetectados();
+  }catch(e){
+    status.className = 'foto-status';
+    status.textContent = 'Não consegui ler a imagem. Tente uma foto mais nítida ou mais próxima da lista.';
+  }
+}
+
+const DROP = ['online','digitando','audio','figurinha','sticker','imagem','video','mensagem','mensagens','whatsapp','alexa','echo','lista','listas','compras','adicionar','adicionado','adicionados','item','itens','hoje','ontem','grupo','voce','celular','ligacao','chamada','perdida','encaminhada','encaminhado','status','visto','entregue','editar','apagar','excluir','pesquisar','buscar','concluido','concluida','feito','vou','pode','posso','preciso','quero','compra','comprar','comprei','manda','mandar','traz','trazer','pega','pegar','leva','levar','falar','acho','acha','tem','esqueci','esquece','lembra','favor','obrigado','obrigada','amor','oi','ola','ok','sim','nao','entao','tambem'];
+
+// ---- Ditado por voz (falar itens) ----
+let recog = null, micAtivo = false, faladosPend = [];
+const DICNORM = SUGESTOES.map(function(s){ return {n:normal(s.nome), nome:s.nome, cat:s.cat}; });
+
+function levenshtein(a,b){
+  const m=a.length, n=b.length;
+  if(!m) return n; if(!n) return m;
+  const d=[]; for(let i=0;i<=m;i++){ d[i]=[i]; }
+  for(let j=0;j<=n;j++){ d[0][j]=j; }
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      const c = a[i-1]===b[j-1] ? 0 : 1;
+      d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+c);
+    }
+  }
+  return d[m][n];
+}
+
+function corrigirFala(frag){
+  let l = (frag||'').trim().replace(/\s+/g,' ');
+  if(!l) return null;
+  const nl = normal(l);
+  if(nl.length < 2) return null;
+  // 1) match exato no dicionário
+  for(let i=0;i<DICNORM.length;i++){ if(DICNORM[i].n===nl) return {nome:DICNORM[i].nome, cat:DICNORM[i].cat}; }
+  // 2) remove artigo/preposição no começo ("o abacate", "de cebola")
+  const semArt = nl.replace(/^(o |a |os |as |um |uma |uns |umas |de |do |da |dos |das )/,'');
+  if(semArt !== nl){
+    for(let i=0;i<DICNORM.length;i++){ if(DICNORM[i].n===semArt) return {nome:DICNORM[i].nome, cat:DICNORM[i].cat}; }
+  }
+  // 3) fuzzy (corrige fala errada, ex.: "banan" -> "Banana")
+  const alvo = semArt.length>=2 ? semArt : nl;
+  let melhor=null, best=99;
+  for(let i=0;i<DICNORM.length;i++){
+    const dist = levenshtein(alvo, DICNORM[i].n);
+    if(dist < best){ best=dist; melhor=DICNORM[i]; }
+  }
+  const limite = Math.max(2, Math.floor(alvo.length*0.34));
+  if(melhor && best <= limite) return {nome:melhor.nome, cat:melhor.cat};
+  // 4) sem correção: mantém o que foi falado, capitalizado
+  const base = semArt.length>=2 ? semArt : l;
+  const cap = base.charAt(0).toUpperCase()+base.slice(1);
+  return {nome:cap, cat:categorizar(cap)};
+}
+
+function separarFala(texto){
+  return (texto||'')
+    .replace(/\bv[íi]rgula\b/gi, ',')
+    .split(/,|;|\se\s|\n/i)
+    .map(function(x){ return x.trim(); })
+    .filter(function(x){ return x.length; });
+}
+
+function addFalado(frag){
+  const r = corrigirFala(frag);
+  if(!r) return;
+  const k = chave(r.nome);
+  if(faladosPend.some(function(f){ return chave(f.nome)===k; })) return;   // já na temporária
+  faladosPend.push(r);
+  renderFalados();
+  try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
+}
+
+function renderFalados(){
+  const box = document.getElementById('faladosLista');
+  if(!faladosPend.length){
+    box.innerHTML = '<div class="falados-vazio">Os itens que você falar aparecem aqui</div>';
+  } else {
+    box.innerHTML = faladosPend.map(function(f,i){
+      const jaTem = itemExiste(f.nome) ? ' · já tem' : '';
+      return '<div class="falado-item"><span class="fnome">'+f.nome+'</span>'+
+             '<span class="fcat">'+f.cat+jaTem+'</span>'+
+             '<button class="falado-x" onclick="removerFalado('+i+')" aria-label="Remover">&times;</button></div>';
+    }).join('');
+  }
+  const btn = document.getElementById('btnEnviarFalar');
+  btn.textContent = 'Enviar ('+faladosPend.length+')';
+  btn.disabled = faladosPend.length===0;
+}
+
+function removerFalado(i){ faladosPend.splice(i,1); renderFalados(); }
+
+function suportaRecog(){ return ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window); }
+
+function abrirFalar(){
+  faladosPend = [];
+  renderFalados();
+  document.getElementById('micInterim').textContent = '';
+  document.getElementById('micStatus').textContent = suportaRecog()
+    ? 'Toque no microfone e fale os itens, um de cada vez'
+    : 'Seu navegador não suporta ditado por voz. Use o campo "Adicionar item".';
+  document.getElementById('modalFalar').classList.add('show');
+}
+
+function fecharFalar(){
+  pararMic();
+  document.getElementById('modalFalar').classList.remove('show');
+}
+
+function toggleMic(){
+  if(micAtivo){ pararMic(); return; }
+  if(!suportaRecog()){
+    document.getElementById('micStatus').textContent = 'Seu navegador não suporta ditado por voz. Use o campo "Adicionar item".';
+    return;
+  }
+  iniciarMic();
+}
+
+function iniciarMic(){
+  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recog = new R();
+  recog.lang = 'pt-BR';
+  recog.continuous = true;
+  recog.interimResults = true;
+  recog.maxAlternatives = 1;
+  recog.onresult = function(ev){
+    let interim = '';
+    for(let i=ev.resultIndex;i<ev.results.length;i++){
+      const res = ev.results[i];
+      if(res.isFinal){ separarFala(res[0].transcript).forEach(addFalado); }
+      else { interim += res[0].transcript; }
+    }
+    document.getElementById('micInterim').textContent = interim;
+  };
+  recog.onerror = function(ev){
+    if(ev.error==='not-allowed' || ev.error==='service-not-allowed'){
+      micAtivo = false; atualizarMicUI();
+      const dentroApp = !window.isSecureContext || /(FBAN|FBAV|Instagram|Line|Claude)/i.test(navigator.userAgent);
+      document.getElementById('micStatus').innerHTML = dentroApp
+        ? 'Microfone bloqueado aqui. Abra o app pelo <b>Safari</b> (site hospedado, https) — no navegador interno o microfone não funciona.'
+        : 'Precisa permitir o microfone: Ajustes › Safari › Microfone › Permitir. Depois recarregue.';
+    }
+  };
+  recog.onend = function(){
+    if(micAtivo){ try{ recog.start(); }catch(e){} }   // iOS corta sozinho: reinicia
+    else { atualizarMicUI(); }
+  };
+  micAtivo = true;
+  atualizarMicUI();
+  document.getElementById('micStatus').textContent = 'Ouvindo... pode falar os itens';
+  try{ recog.start(); }catch(e){}
+}
+
+function pararMic(){
+  micAtivo = false;
+  if(recog){ try{ recog.stop(); }catch(e){} }
+  document.getElementById('micInterim').textContent = '';
+  atualizarMicUI();
+  if(document.getElementById('modalFalar').classList.contains('show')){
+    document.getElementById('micStatus').textContent = faladosPend.length
+      ? 'Pausado. Toque em Enviar quando terminar.'
+      : 'Toque no microfone e fale os itens, um de cada vez';
+  }
+}
+
+function atualizarMicUI(){
+  const b = document.getElementById('micBig');
+  if(b){ b.classList.toggle('on', micAtivo); }
+}
+
+function enviarFalados(){
+  let novos = 0;
+  faladosPend.forEach(function(f){
+    const k = chave(f.nome);
+    const iRem = removidos.indexOf(k);
+    const naBase = dadosBase.some(function(g){ return g.itens.some(function(it){ return chave(it.nome)===k; }); });
+    if(naBase && iRem>=0){ removidos.splice(iRem,1); novos++; return; }
+    if(itemExiste(f.nome)) return;
+    extras.push({ nome:f.nome, qtd:1, extra:true, categoria:f.cat||categorizar(f.nome) });
+    novos++;
+  });
+  fecharFalar();
+  salvar(); render();
+  toast(novos>0 ? ('Adicionados '+novos+' '+(novos===1?'item':'itens')) : 'Nada novo pra adicionar');
+}
+
+function padronizarNome(l){
+  const nl = normal(l);
+  for(let i=0;i<SUGESTOES.length;i++){
+    if(normal(SUGESTOES[i].nome)===nl) return SUGESTOES[i].nome;
+  }
+  return l.charAt(0).toUpperCase()+l.slice(1).toLowerCase();
+}
+
+function parseItens(texto){
+  const linhas = texto.split(/\r?\n/);
+  const vistos = {};
+  const out = [];
+  linhas.forEach(function(raw){
+    let l = (raw||'').trim();
+    if(!l) return;
+    // remove UM marcador no início (checkbox, bullet ou traço)
+    l = l.replace(/^\s*(\[\s*[xX]?\s*\]|☐|☑|✓|✔|•|·|◦|▪|▸|‣|→|-|\*)\s*/,'');
+    // remove numeração "1." "2)"
+    l = l.replace(/^\d+[\.\)\-\s]+/,'');
+    // remove emojis e símbolos
+    l = l.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\u{FE0F}]/gu,'');
+    // remove conteúdo entre parênteses no fim
+    l = l.replace(/\(.*?\)\s*$/,'');
+    l = l.replace(/\s{2,}/g,' ').trim();
+    if(!l) return;
+
+    const low = normal(l);
+    if(low.length < 2 || l.length > 38) return;          // muito curto ou frase longa
+    if(/\d{1,2}[:h]\d{2}/.test(l)) return;                // horário
+    if(/https?|www\./i.test(l)) return;                   // link
+    if(/^[\d\s.,:\/-]+$/.test(l)) return;                 // só números/pontuação
+    if(l.split(/\s+/).length > 5) return;                 // frase longa
+    if(/[?!:]$/.test(l)) return;                          // fim de frase
+    const toks = low.split(/\s+/);
+    if(toks.some(function(t){return DROP.indexOf(t)>=0;})) return;  // conversa/ruído
+
+    const nome = padronizarNome(l);
+    const k = chave(nome);
+    if(!k || vistos[k]) return;
+    vistos[k] = true;
+    out.push({ nome:nome, cat:categorizar(nome), sel:true });
+  });
+  return out;
+}
+
+function mostrarDetectados(){
+  const status = document.getElementById('fotoStatus');
+  const cont = document.getElementById('fotoLista');
+  const add = document.getElementById('btnAddFoto');
+  cont.innerHTML = '';
+  if(!detectados.length){
+    status.className = 'foto-status';
+    status.textContent = 'Nenhum item reconhecido. Tente uma foto mais nítida ou recortada só na lista.';
+    add.style.display = 'none';
+    return;
+  }
+  status.className = 'foto-status';
+  status.textContent = 'Confira os itens e toque para incluir ou remover:';
+  detectados.forEach(function(d, idx){
+    const row = document.createElement('div');
+    row.className = 'foto-item' + (d.sel?' on':'');
+    row.innerHTML = '<div class="fbox">'+checkSVG+'</div><div class="fnome">'+d.nome+'</div><div class="fcat">'+d.cat+'</div>';
+    row.onclick = function(){ detectados[idx].sel = !detectados[idx].sel; row.classList.toggle('on'); atualizarAddBtn(); };
+    cont.appendChild(row);
+  });
+  add.style.display = '';
+  atualizarAddBtn();
+}
+
+function atualizarAddBtn(){
+  const n = detectados.filter(function(d){return d.sel;}).length;
+  const add = document.getElementById('btnAddFoto');
+  add.textContent = 'Adicionar ('+n+')';
+  add.disabled = n===0;
+}
+
+function confirmarFoto(){
+  let novos = 0;
+  detectados.filter(function(d){return d.sel;}).forEach(function(d){
+    const k = chave(d.nome);
+    const iRem = removidos.indexOf(k);
+    const naBase = dadosBase.some(function(g){return g.itens.some(function(it){return chave(it.nome)===k;});});
+    if(naBase && iRem>=0){ removidos.splice(iRem,1); novos++; return; }
+    if(itemExiste(d.nome)) return;
+    extras.push({ nome:d.nome, qtd:1, extra:true, categoria:d.cat||categorizar(d.nome) });
+    novos++;
+  });
+  fecharFoto();
+  salvar(); render();
+  toast(novos>0 ? ('Importados '+novos+' '+(novos===1?'item':'itens')) : 'Nada novo pra adicionar');
+}
+
+function importarPDF(){ document.getElementById('fileInputPDF').click(); }
+
+async function lerArquivoPDF(ev){
+  const file = ev.target.files && ev.target.files[0];
+  ev.target.value = '';
+  if(!file) return;
+  if(!window.pdfjsLib){ toast('Leitor de PDF carregando, tente de novo'); return; }
+  try{
+    if(window.pdfjsLib.GlobalWorkerOptions){
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+    const buf = await file.arrayBuffer();
+    const pdf = await window.pdfjsLib.getDocument({data:buf}).promise;
+
+    let payload = null;
+    try{
+      const meta = await pdf.getMetadata();
+      if(meta && meta.info && meta.info.Subject && meta.info.Subject.indexOf('LSDATA::')===0){
+        payload = meta.info.Subject.slice(8);
+      }
+    }catch(e){}
+
+    if(!payload){
+      let txt='';
+      for(let p=1;p<=pdf.numPages;p++){
+        const page = await pdf.getPage(p);
+        const tc = await page.getTextContent();
+        txt += tc.items.map(function(i){return i.str;}).join('');
+      }
+      const idx = txt.indexOf('LSDATA::');
+      if(idx>=0){ payload = txt.slice(idx+8).replace(/[^A-Za-z0-9+/=]/g,''); }
+    }
+
+    if(!payload){ toast('Este PDF não tem dados da lista'); return; }
+    const dados = JSON.parse(b64dec(payload));
+    mesclarImportado(dados);
+  }catch(e){
+    toast('Não consegui ler este PDF');
+  }
+}
+
+function mesclarImportado(dados){
+  let novos=0;
+  if(dados.extras && dados.extras.length){
+    dados.extras.forEach(function(it){
+      const k = chave(it.nome);
+      const existe = extras.some(function(x){return chave(x.nome)===k;}) ||
+                     dadosBase.some(function(g){return g.itens.some(function(b){return chave(b.nome)===k;});});
+      if(!existe){
+        extras.push({ nome:it.nome, qtd:it.qtd||1, extra:true, categoria:it.categoria||categorizar(it.nome) });
+        novos++;
+      }
+    });
+  }
+  if(dados.estado){
+    Object.keys(dados.estado).forEach(function(k){ if(dados.estado[k]) estado[k]=true; });
+  }
+  salvar(); render();
+  toast(novos>0 ? ('Lista importada · '+novos+' '+(novos===1?'item novo':'itens novos')) : 'Lista importada');
+}
+
+function adicionar(){
+  const inp = document.getElementById('novoItem');
+  const qi  = document.getElementById('novoQtd');
+  const nome = inp.value.trim();
+  document.getElementById('sugestoes').innerHTML = '';
+  if(!nome) return;
+
+  const k = chave(nome);
+  const naBase = dadosBase.some(function(g){return g.itens.some(function(it){return chave(it.nome)===k;});});
+  const iRem = removidos.indexOf(k);
+  if(naBase && iRem>=0){         // item padrão removido antes: restaura
+    removidos.splice(iRem,1);
+    inp.value=''; qi.value=''; inp.focus();
+    salvar(); render();
+    return;
+  }
+
+  if(itemExiste(nome)){          // já está na lista → avisa e não duplica
+    toast(nome + ' já está na lista');
+    inp.value=''; qi.value=''; inp.focus();
+    return;
+  }
+
+  let q = parseInt(qi.value, 10);
+  if(!q || q < 1) q = 1;
+  extras.push({ nome:nome, qtd:q, extra:true, categoria:categorizar(nome) });
+
+  inp.value=''; qi.value=''; inp.focus();
+  salvar(); render();
+}
+
+function removerItem(it){
+  const k = chave(it.nome);
+  if(it.extra){ extras = extras.filter(function(x){return chave(x.nome)!==k;}); }
+  else if(removidos.indexOf(k)<0){ removidos.push(k); }
+  delete estado[k];
+  salvar(); render();
+}
+
+(async function(){
+  await carregar();
+  document.getElementById('txtOcultar').textContent = ocultar ? 'Mostrar comprados' : 'Ocultar comprados';
+  document.getElementById('novoItem').addEventListener('blur', function(){
+    setTimeout(function(){ document.getElementById('sugestoes').innerHTML=''; }, 150);
+  });
+  render();
+})();
+</script>
+<script>
+// registra o service worker e recarrega sozinho quando sai versão nova
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').then(function (reg) {
+      reg.addEventListener('updatefound', function () {
+        const novo = reg.installing;
+        if (!novo) return;
+        novo.addEventListener('statechange', function () {
+          if (novo.state === 'installed' && navigator.serviceWorker.controller) {
+            window.location.reload();   // versão nova publicada -> atualiza
+          }
+        });
+      });
+      setInterval(function () { reg.update(); }, 60 * 60 * 1000); // checa de hora em hora
+    }).catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
