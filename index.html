@@ -182,6 +182,20 @@
   .falado-item .fnome{flex:1;font-size:1rem;font-weight:500;}
   .falado-x{flex:0 0 auto;width:30px;height:30px;border:none;background:none;color:#c0392b;cursor:pointer;font-size:1.4rem;line-height:1;border-radius:8px;}
   .falados-vazio{text-align:center;color:var(--muted);font-size:.88rem;padding:22px 0;}
+
+  .sync-wrap{padding:12px 16px 0;}
+  .sync-box{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
+  .sync-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .sync-top b{font-size:.9rem;color:var(--pine);}
+  .sync-row{display:flex;gap:8px;}
+  .sync-row input{flex:1;min-width:0;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:.95rem;background:#fff;color:var(--ink);}
+  .sync-row button{flex:0 0 auto;padding:11px 16px;border:none;border-radius:10px;background:var(--pine);color:#fff;font-family:inherit;font-weight:700;font-size:.9rem;cursor:pointer;}
+  .sync-status{font-size:.78rem;margin-top:8px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+  .sync-status::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--muted);flex:0 0 auto;}
+  .sync-status.ok::before{background:var(--green);}
+  .sync-status.enviando::before{background:var(--amber);}
+  .sync-status.offline::before{background:#c0392b;}
+  .sync-dica{font-size:.76rem;color:var(--muted);margin-top:6px;line-height:1.45;}
 </style>
 </head>
 <body>
@@ -213,6 +227,21 @@
     <svg id="olho" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
     <span id="txtOcultar">Ocultar comprados</span>
   </button>
+</div>
+
+<div class="sync-wrap">
+  <div class="sync-box">
+    <div class="sync-top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#123a28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+      <b>Lista compartilhada</b>
+    </div>
+    <div class="sync-row">
+      <input id="codigoInput" type="text" placeholder="código da lista (ex: casa-ls)" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <button onclick="definirCodigo(document.getElementById('codigoInput').value)">Ligar</button>
+    </div>
+    <div id="syncStatus" class="sync-status off">Sincronização desligada</div>
+    <div class="sync-dica">Use o mesmo código nos dois celulares para compartilhar a lista. Deixe vazio e toque em Ligar para desativar.</div>
+  </div>
 </div>
 
 <div class="falar-wrap">
@@ -544,10 +573,17 @@ let jaComemorou = false;
 
 function chave(nome){ return nome.toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g,''); }
 
-async function salvar(){
-  const payload = JSON.stringify({estado, extras, removidos, modo, ocultar});
+async function salvarLocal(){
+  const payload = JSON.stringify({estado, extras, removidos, modo, ocultar, doc:docLocal});
   try{ if(window.storage && window.storage.set){ await window.storage.set('lista-feira', payload); return; } }catch(e){}
   try{ localStorage.setItem('lista-feira', payload); }catch(e){}
+}
+
+// toda mudança: carimba, grava no aparelho (offline) e agenda o envio
+async function salvar(){
+  try{ carimbar(); }catch(e){}
+  await salvarLocal();
+  if(codigoLista) agendarSync();
 }
 async function carregar(){
   let raw = null;
@@ -564,8 +600,169 @@ async function carregar(){
       removidos = d.removidos || [];
       modo = d.modo||'categoria';
       ocultar = !!d.ocultar;
+      if(d.doc && d.doc.ts) docLocal = d.doc;
+      else { docLocal = { d: docAtual(), ts:{} };
+             Object.keys(docLocal.d).forEach(function(k){ docLocal.ts[k] = 1; }); }
     }catch(e){}
   }
+}
+
+// ================== SINCRONIZAÇÃO ==================
+// Modelo: cada mudança recebe um carimbo de tempo (ts). Ao juntar duas versões,
+// para cada item vence quem mexeu por último. Funciona offline: grava local
+// sempre, e envia quando houver internet.
+
+let codigoLista = '';
+let docLocal = { d:{}, ts:{} };   // d = dados por chave, ts = carimbo por chave
+let syncPend = false;             // tem coisa pra enviar
+let syncTimer = null;
+let ultimoSyncOk = 0;
+let syncEstado = 'off';           // off | ok | enviando | offline
+
+function docAtual(){
+  const d = {};
+  Object.keys(estado).forEach(function(k){ d['m:'+k] = !!estado[k]; });
+  extras.forEach(function(it){
+    d['e:'+chave(it.nome)] = { nome:it.nome, qtd:it.qtd, cat:it.categoria||categorizar(it.nome), del:false };
+  });
+  removidos.forEach(function(k){ d['r:'+k] = true; });
+  return d;
+}
+
+// compara o estado atual com o último documento e carimba só o que mudou
+function carimbar(){
+  const agora = docAtual();
+  const antes = docLocal.d || {};
+  const t = Date.now();
+  const todas = new Set(Object.keys(agora).concat(Object.keys(antes)));
+
+  todas.forEach(function(k){
+    const temAgora = Object.prototype.hasOwnProperty.call(agora, k);
+    const temAntes = Object.prototype.hasOwnProperty.call(antes, k);
+
+    if(temAgora){
+      const igual = temAntes && JSON.stringify(antes[k]) === JSON.stringify(agora[k]);
+      if(!igual){ docLocal.d[k] = agora[k]; docLocal.ts[k] = t; syncPend = true; }
+    } else if(temAntes){
+      // sumiu: vira "lápide" pra apagar também no outro aparelho
+      const morto = k.startsWith('e:') ? { del:true } : (k.startsWith('r:') ? false : false);
+      if(JSON.stringify(antes[k]) !== JSON.stringify(morto)){
+        docLocal.d[k] = morto; docLocal.ts[k] = t; syncPend = true;
+      }
+    }
+  });
+}
+
+// reescreve estado/extras/removidos a partir do documento (depois de juntar)
+function aplicarDoc(doc){
+  Object.keys(estado).forEach(function(k){ delete estado[k]; });
+  extras = [];
+  removidos = [];
+
+  Object.keys(doc.d||{}).forEach(function(k){
+    const v = doc.d[k];
+    if(k.startsWith('m:')){ if(v) estado[k.slice(2)] = true; }
+    else if(k.startsWith('e:')){
+      if(v && !v.del && v.nome){
+        extras.push({ nome:v.nome, qtd:v.qtd, extra:true, categoria:v.cat||categorizar(v.nome) });
+      }
+    }
+    else if(k.startsWith('r:')){ if(v) removidos.push(k.slice(2)); }
+  });
+  docLocal = doc;
+}
+
+function juntar(a, b){
+  a = a || {d:{},ts:{}}; b = b || {d:{},ts:{}};
+  const out = { d:{}, ts:{} };
+  const chaves = new Set(Object.keys(a.ts||{}).concat(Object.keys(b.ts||{})));
+  chaves.forEach(function(k){
+    const ta = (a.ts&&a.ts[k])||0, tb = (b.ts&&b.ts[k])||0;
+    const venc = tb > ta ? b : a;
+    out.ts[k] = Math.max(ta, tb);
+    if(venc.d && Object.prototype.hasOwnProperty.call(venc.d, k)) out.d[k] = venc.d[k];
+  });
+  return out;
+}
+
+function marcarSync(e){
+  syncEstado = e;
+  const el = document.getElementById('syncStatus');
+  if(!el) return;
+  const txt = { off:'Sincronização desligada', ok:'Sincronizado', enviando:'Sincronizando...', offline:'Sem internet — salvo no aparelho' };
+  el.textContent = codigoLista ? (txt[e]||'') : txt.off;
+  el.className = 'sync-status ' + e;
+}
+
+async function sincronizar(forcar){
+  if(!codigoLista) return;
+  if(!navigator.onLine){ marcarSync('offline'); return; }
+  if(!syncPend && !forcar && (Date.now()-ultimoSyncOk) < 4000) return;
+
+  marcarSync('enviando');
+  try{
+    const r = await fetch('/api/lista/'+encodeURIComponent(codigoLista), {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(docLocal)
+    });
+    if(!r.ok) throw new Error('http '+r.status);
+    const servidor = await r.json();
+    const juntado = juntar(docLocal, servidor);
+
+    const mudou = JSON.stringify(juntado.d) !== JSON.stringify(docLocal.d);
+    aplicarDoc(juntado);
+    syncPend = false;
+    ultimoSyncOk = Date.now();
+    marcarSync('ok');
+    if(mudou){ salvarLocal(); render(); }
+    else { salvarLocal(); }
+  }catch(e){
+    marcarSync(navigator.onLine ? 'offline' : 'offline');
+  }
+}
+
+function agendarSync(){
+  if(syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(function(){ sincronizar(false); }, 800);   // agrupa toques seguidos
+}
+
+function definirCodigo(c){
+  const limpo = (c||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,40);
+  const inp = document.getElementById('codigoInput');
+  if(limpo && limpo.length < 3){
+    toast('O código precisa ter ao menos 3 letras');
+    return;
+  }
+  codigoLista = limpo;
+  try{ localStorage.setItem('lista-codigo', codigoLista); }catch(e){}
+  if(inp) inp.value = codigoLista;
+  if(codigoLista){
+    // primeira vez: manda o que já existe aqui e traz o que houver lá
+    carimbar();
+    syncPend = true;
+    sincronizar(true);
+    toast('Sincronização ligada: '+codigoLista);
+  } else {
+    marcarSync('off');
+    toast('Sincronização desligada');
+  }
+}
+
+function iniciarSync(){
+  try{ codigoLista = localStorage.getItem('lista-codigo') || ''; }catch(e){}
+  const inp = document.getElementById('codigoInput');
+  if(inp) inp.value = codigoLista;
+  marcarSync(codigoLista ? 'ok' : 'off');
+
+  if(codigoLista){ sincronizar(true); }
+
+  setInterval(function(){ sincronizar(false); }, 6000);          // busca mudanças da outra pessoa
+  window.addEventListener('online',  function(){ sincronizar(true); });
+  window.addEventListener('offline', function(){ marcarSync('offline'); });
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible') sincronizar(true);
+  });
 }
 
 function construir(){
@@ -1218,6 +1415,7 @@ function removerItem(it){
     setTimeout(function(){ document.getElementById('sugestoes').innerHTML=''; }, 150);
   });
   render();
+  iniciarSync();
 })();
 </script>
 <script>

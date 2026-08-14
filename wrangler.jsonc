@@ -1,7 +1,15 @@
 {
   "name": "lista-supermercado",
   "compatibility_date": "2026-08-13",
+  "main": "worker.js",
   "assets": {
-    "directory": "./"
-  }
+    "directory": "./",
+    "binding": "ASSETS"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "LISTA",
+      "id": "8f5b96eaf48c42259fe043525cc7393b"
+    }
+  ]
 }
