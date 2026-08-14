@@ -181,6 +181,8 @@
   .falado-item{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line);}
   .falado-item .fnome{flex:1;font-size:1rem;font-weight:500;}
   .falado-x{flex:0 0 auto;width:30px;height:30px;border:none;background:none;color:#c0392b;cursor:pointer;font-size:1.4rem;line-height:1;border-radius:8px;}
+  .falado-item.duvida{background:#fdf6e6;}
+  .fduv{flex:0 0 auto;width:19px;height:19px;border-radius:50%;background:var(--amber);color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
   .falados-vazio{text-align:center;color:var(--muted);font-size:.88rem;padding:22px 0;}
 
   .sync-wrap{padding:12px 16px 0;}
@@ -196,6 +198,31 @@
   .sync-status.enviando::before{background:var(--amber);}
   .sync-status.offline::before{background:#c0392b;}
   .sync-dica{font-size:.76rem;color:var(--muted);margin-top:6px;line-height:1.45;}
+
+  .rel-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px;border:1.5px solid var(--pine);border-radius:14px;background:transparent;color:var(--pine);font-family:inherit;font-weight:700;font-size:.92rem;cursor:pointer;}
+  .rel-btn svg{width:18px;height:18px;}
+  .modal-rel{max-width:560px;max-height:86vh;display:flex;flex-direction:column;}
+  .rel-per{display:flex;gap:6px;margin:4px 0 14px;}
+  .rel-per button{flex:1;padding:9px 4px;border:1px solid var(--line);background:#fff;border-radius:10px;font-family:inherit;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;}
+  .rel-per button.on{background:var(--pine);color:#fff;border-color:var(--pine);}
+  #relCorpo{overflow-y:auto;flex:1;padding-right:2px;}
+  #relCorpo h4{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;color:var(--pine);margin:20px 0 4px;}
+  .rel-cards{display:flex;gap:8px;}
+  .rel-card{flex:1;background:var(--sage);border-radius:12px;padding:11px 8px;text-align:center;}
+  .rel-card b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;color:var(--pine);line-height:1.1;}
+  .rel-card span{font-size:.68rem;color:var(--muted);line-height:1.25;display:block;margin-top:2px;}
+  .rel-item{margin-bottom:11px;}
+  .rel-lin{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+  .rel-nome{font-size:.92rem;font-weight:600;color:var(--ink);}
+  .rel-n{font-size:.82rem;font-weight:700;color:var(--pine);flex:0 0 auto;}
+  .rel-bar{height:7px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:5px;}
+  .rel-bar i{display:block;height:100%;background:var(--green);border-radius:6px;}
+  .rel-bar.cat i{background:var(--amber);}
+  .rel-sub{font-size:.74rem;color:var(--muted);margin-top:3px;}
+  .rel-chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .rel-chip{border:1px solid var(--amber);background:#fdf6e6;color:var(--pine);border-radius:20px;padding:7px 12px;font-family:inherit;font-size:.84rem;font-weight:600;cursor:pointer;}
+  .rel-chip b{color:var(--amber);margin-left:2px;}
+  .rel-vazio{text-align:center;color:var(--muted);font-size:.9rem;padding:30px 10px;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -226,6 +253,13 @@
   <button class="link" id="btnOcultar" onclick="toggleOcultar()">
     <svg id="olho" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
     <span id="txtOcultar">Ocultar comprados</span>
+  </button>
+</div>
+
+<div class="falar-wrap" style="padding-bottom:0;">
+  <button class="rel-btn" onclick="abrirRelatorio()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Relatórios de compra
   </button>
 </div>
 
@@ -297,6 +331,22 @@
     <div class="modal-btns">
       <button class="mb-cancel" onclick="fecharConfirm()">Cancelar</button>
       <button class="mb-ok" onclick="confirmarNova()">Nova lista</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalRel" class="modal">
+  <div class="modal-card modal-rel">
+    <h3>Relatórios de compra</h3>
+    <div class="rel-per">
+      <button data-d="30" onclick="renderRelatorio(30)">30 dias</button>
+      <button data-d="90" class="on" onclick="renderRelatorio(90)">90 dias</button>
+      <button data-d="180" onclick="renderRelatorio(180)">6 meses</button>
+      <button data-d="0" onclick="renderRelatorio(0)">Tudo</button>
+    </div>
+    <div id="relCorpo"></div>
+    <div class="modal-btns">
+      <button class="mb-add" onclick="fecharRelatorio()">Fechar</button>
     </div>
   </div>
 </div>
@@ -395,14 +445,14 @@ const ORDEM = ["Limpeza","Mercearia","Hortifrúti","Padaria","Frios e laticínio
 const SUGESTOES = [];
 (function(){
   const dic = {
-    "Hortifrúti":["Tomate","Tomate cereja","Cebola","Alho","Batata","Batata doce","Inhame","Cenoura","Alface","Couve","Brócolis","Abobrinha","Abóbora","Chuchu","Repolho","Pimentão","Pepino","Mandioca","Cheiro verde","Salsa","Cebolinha","Coentro","Rúcula","Espinafre","Beterraba","Quiabo","Berinjela","Milho verde","Alecrim","Champignon","Cogumelo","Banana","Banana prata","Banana da terra","Maçã","Laranja","Limão","Mamão","Manga","Abacaxi","Uva","Melancia","Melão","Morango","Abacate","Pera","Goiaba","Maracujá","Gengibre"],
-    "Mercearia":["Arroz","Feijão","Feijão cristal","Macarrão","Café","Açúcar","Sal","Sal rosa","Açafrão","Chimichurri","Páprica doce","Páprica picante","Óleo","Azeite","Farinha de trigo","Farinha de mandioca","Fubá","Amido de milho","Fermento","Molho de tomate","Extrato de tomate","Milho em conserva","Ervilha","Atum","Sardinha","Aveia","Tapioca","Vinagre","Biscoito","Bolacha","Miojo","Gelatina","Chocolate","Achocolatado","Leite em pó","Batata palha","Granola","Mel","Ketchup","Maionese","Mostarda","Orégano","Canela"],
-    "Frios e laticínios":["Leite","Manteiga","Margarina","Queijo","Mussarela","Presunto","Mortadela","Iogurte","Requeijão","Creme de leite","Leite condensado","Ricota"],
-    "Açougue":["Carne","Carne moída","Fígado","Picanha","Alcatra","Bife de alcatra","Costela","Costelinha de porco","Frango","Coxinha da asa","Coxa de frango","Sobrecoxa","Peito de frango","Linguiça","Salsicha","Bacon","Peixe","Tilápia","Camarão","Pernil"],
-    "Bebidas":["Água","Refrigerante","Suco","Cerveja","Vinho","Guaraná","Coca-cola","Chá"],
-    "Padaria":["Pão","Pão de forma","Pão francês","Bolo","Rosca","Croissant"],
-    "Higiene":["Sabonete","Shampoo","Condicionador","Creme dental","Papel higiênico","Fralda","Absorvente","Desodorante","Cotonete","Lâmina de barbear","Algodão"],
-    "Limpeza":["Detergente","Desinfetante","Amaciante","Sabão em pó","Sabão líquido de lavar roupa","Água sanitária","Esponja","Multiuso","Saco de lixo","Papel toalha","Guardanapo","Cera","Alvejante"]
+    "Hortifrúti":["Tomate","Tomate cereja","Cebola","Alho","Batata","Batata doce","Inhame","Cenoura","Alface","Couve","Brócolis","Abobrinha","Abóbora","Chuchu","Repolho","Pimentão","Pepino","Mandioca","Cheiro verde","Salsa","Cebolinha","Coentro","Rúcula","Espinafre","Beterraba","Quiabo","Berinjela","Milho verde","Alecrim","Champignon","Cogumelo","Banana","Banana prata","Banana da terra","Maçã","Laranja","Limão","Mamão","Manga","Abacaxi","Uva","Melancia","Melão","Morango","Abacate","Pera","Goiaba","Maracujá","Gengibre","Kiwi","Ameixa","Pêssego","Tangerina","Mexerica","Acerola","Caju","Graviola","Cupuaçu","Jaca","Pinha","Carambola","Figo","Romã","Framboesa","Mirtilo","Cebola roxa","Alho poró","Nabo","Rabanete","Vagem","Jiló","Maxixe","Couve flor","Aipim","Batata inglesa","Tomate italiano","Pimenta","Manjericão","Hortelã","Tomilho","Louro fresco","Salsão"],
+    "Mercearia":["Arroz","Feijão","Feijão cristal","Macarrão","Café","Açúcar","Sal","Sal rosa","Açafrão","Chimichurri","Páprica doce","Páprica picante","Óleo","Azeite","Farinha de trigo","Farinha de mandioca","Fubá","Amido de milho","Fermento","Molho de tomate","Extrato de tomate","Milho em conserva","Ervilha","Atum","Sardinha","Aveia","Tapioca","Vinagre","Biscoito","Bolacha","Miojo","Gelatina","Chocolate","Achocolatado","Leite em pó","Batata palha","Granola","Mel","Ketchup","Maionese","Mostarda","Orégano","Canela","Leite de coco","Coco ralado","Azeitona","Palmito","Pipoca","Amendoim","Castanha","Nozes","Uva passa","Doce de leite","Geleia","Creme de avelã","Paçoca","Rapadura","Farofa pronta","Caldo de galinha","Cominho","Pimenta do reino","Colorau","Louro","Curry","Bicarbonato","Leite condensado","Suco em pó","Cereal","Sucrilhos","Barra de cereal","Torrada","Bolacha água e sal","Bolacha recheada","Macarrão instantâneo","Lasanha","Nhoque","Massa de pastel","Fermento em pó","Chá mate","Adoçante","Grão de bico","Lentilha","Soja"],
+    "Frios e laticínios":["Leite","Manteiga","Margarina","Queijo","Mussarela","Presunto","Mortadela","Iogurte","Requeijão","Creme de leite","Leite condensado","Ricota","Queijo minas","Queijo coalho","Queijo prato","Parmesão","Cream cheese","Nata","Iogurte natural","Iogurte grego","Bebida láctea","Ovo","Ovos","Salame","Peito de peru","Apresuntado","Queijo ralado","Manteiga ghee","Leite integral","Leite desnatado","Leite sem lactose"],
+    "Açougue":["Carne","Carne moída","Fígado","Picanha","Alcatra","Bife de alcatra","Costela","Costelinha de porco","Frango","Coxinha da asa","Coxa de frango","Sobrecoxa","Peito de frango","Linguiça","Salsicha","Bacon","Peixe","Tilápia","Camarão","Pernil","Contrafilé","Maminha","Fraldinha","Patinho","Acém","Músculo","Cupim","Coxão mole","Coxão duro","Filé mignon","Carne de sol","Alcatra carne de sol","Charque","Costela bovina","Lombo","Pernil suíno","Bisteca","Asa de frango","Frango inteiro","Peixe tilápia","Salmão","Merluza","Pescada","Calabresa","Linguiça toscana","Hambúrguer","Nuggets"],
+    "Bebidas":["Água","Refrigerante","Suco","Cerveja","Vinho","Guaraná","Coca-cola","Chá","Água com gás","Água de coco","Suco de laranja","Suco de uva","Néctar","Energético","Isotônico","Cachaça","Whisky","Espumante","Café solúvel","Chá gelado","Tônica","Soda"],
+    "Padaria":["Pão","Pão de forma","Pão francês","Bolo","Rosca","Croissant","Pão de queijo","Pão integral","Pão doce","Baguete","Bisnaguinha","Torta","Sonho","Broa","Biscoito de polvilho","Panetone"],
+    "Higiene":["Sabonete","Shampoo","Condicionador","Creme dental","Papel higiênico","Fralda","Absorvente","Desodorante","Cotonete","Lâmina de barbear","Algodão","Xampu","Sabonete Protex","Pasta de dente","Escova de dente","Fio dental","Lenço umedecido","Aparelho de barbear","Hidratante","Protetor solar","Enxaguante bucal","Talco"],
+    "Limpeza":["Detergente","Desinfetante","Amaciante","Sabão em pó","Sabão líquido de lavar roupa","Água sanitária","Esponja","Multiuso","Saco de lixo","Papel toalha","Guardanapo","Cera","Alvejante","Sabão em barra","Álcool","Limpa vidro","Lustra móveis","Inseticida","Rodo","Vassoura","Pano de chão","Luva de borracha","Cloro","Odorizador"]
   };
   Object.keys(dic).forEach(function(cat){
     dic[cat].forEach(function(nome){ SUGESTOES.push({nome:nome, cat:cat}); });
@@ -637,6 +687,7 @@ function carimbar(){
   const todas = new Set(Object.keys(agora).concat(Object.keys(antes)));
 
   todas.forEach(function(k){
+    if(k.indexOf('h:') === 0) return;         // histórico é permanente: nunca vira lápide
     const temAgora = Object.prototype.hasOwnProperty.call(agora, k);
     const temAntes = Object.prototype.hasOwnProperty.call(antes, k);
 
@@ -765,6 +816,166 @@ function iniciarSync(){
   });
 }
 
+// ---- Histórico de compras (para os relatórios) ----
+// Cada compra vira uma chave própria 'h:item:data', então as compras dos dois
+// celulares se somam naturalmente na sincronização, sem uma apagar a outra.
+
+function registrarCompra(it){
+  const k = chave(it.nome);
+  const agora = Date.now();
+  // evita contar duas vezes se desmarcar e marcar de novo em poucos minutos
+  const recente = Object.keys(docLocal.d||{}).some(function(kk){
+    if(kk.indexOf('h:'+k+':') !== 0) return false;
+    const t = parseInt(kk.split(':')[2], 10);
+    return (agora - t) < 30*60*1000;
+  });
+  if(recente) return;
+
+  const key = 'h:'+k+':'+agora;
+  docLocal.d[key] = { n: it.nome, c: it.categoria || categorizar(it.nome) };
+  docLocal.ts[key] = agora;
+  syncPend = true;
+}
+
+function lerHistorico(dias){
+  const corte = dias ? (Date.now() - dias*86400000) : 0;
+  const out = [];
+  Object.keys(docLocal.d||{}).forEach(function(kk){
+    if(kk.indexOf('h:') !== 0) return;
+    const partes = kk.split(':');
+    const t = parseInt(partes[2], 10);
+    if(!t || t < corte) return;
+    const v = docLocal.d[kk] || {};
+    out.push({ k: partes[1], nome: v.n || partes[1], cat: v.c || 'Outros', t: t });
+  });
+  return out.sort(function(a,b){ return a.t - b.t; });
+}
+
+function analisar(dias){
+  const ev = lerHistorico(dias);
+  const porItem = {};
+  const porCat = {};
+  const porSemana = {};
+
+  ev.forEach(function(e){
+    if(!porItem[e.k]) porItem[e.k] = { nome:e.nome, cat:e.cat, n:0, datas:[] };
+    porItem[e.k].n++;
+    porItem[e.k].datas.push(e.t);
+    porCat[e.cat] = (porCat[e.cat]||0) + 1;
+    const sem = Math.floor(e.t / (7*86400000));
+    porSemana[sem] = (porSemana[sem]||0) + 1;
+  });
+
+  const itens = Object.keys(porItem).map(function(k){
+    const it = porItem[k];
+    let intervalo = null;
+    if(it.datas.length >= 2){
+      let soma = 0;
+      for(let i=1;i<it.datas.length;i++) soma += (it.datas[i]-it.datas[i-1]);
+      intervalo = Math.round(soma / (it.datas.length-1) / 86400000);
+    }
+    const ultima = it.datas[it.datas.length-1];
+    const diasDesde = Math.floor((Date.now()-ultima)/86400000);
+    return {
+      k:k, nome:it.nome, cat:it.cat, n:it.n,
+      intervalo: intervalo, ultima: ultima, diasDesde: diasDesde,
+      atrasado: (intervalo && diasDesde > intervalo * 1.15)
+    };
+  });
+
+  const semanas = Object.keys(porSemana).length || 1;
+  return {
+    total: ev.length,
+    itens: itens,
+    mais: itens.slice().sort(function(a,b){ return b.n-a.n || a.nome.localeCompare(b.nome); }),
+    menos: itens.slice().sort(function(a,b){ return a.n-b.n || a.nome.localeCompare(b.nome); }),
+    categorias: Object.keys(porCat).map(function(c){ return {cat:c, n:porCat[c]}; })
+                 .sort(function(a,b){ return b.n-a.n; }),
+    porSemana: Math.round(ev.length/semanas*10)/10,
+    naHora: itens.filter(function(i){ return i.atrasado; })
+                 .sort(function(a,b){ return (b.diasDesde-b.intervalo)-(a.diasDesde-a.intervalo); })
+  };
+}
+
+function abrirRelatorio(){
+  document.getElementById('modalRel').classList.add('show');
+  renderRelatorio(90);
+}
+function fecharRelatorio(){ document.getElementById('modalRel').classList.remove('show'); }
+
+let relPeriodo = 90;
+function renderRelatorio(dias){
+  relPeriodo = dias;
+  document.querySelectorAll('.rel-per button').forEach(function(b){
+    b.classList.toggle('on', parseInt(b.dataset.d,10) === dias);
+  });
+  const a = analisar(dias);
+  const box = document.getElementById('relCorpo');
+
+  if(a.total === 0){
+    box.innerHTML = '<div class="rel-vazio">Ainda não há compras registradas neste período.<br><br>'+
+      'Cada item que você marcar como comprado entra no histórico — em algumas semanas os relatórios ficam bem úteis.</div>';
+    return;
+  }
+
+  const max = a.mais[0] ? a.mais[0].n : 1;
+  function barras(lista, limite){
+    return lista.slice(0,limite).map(function(i){
+      const pct = Math.max(6, Math.round(i.n/max*100));
+      const freq = i.intervalo ? ('a cada ~'+i.intervalo+' dias') : 'só 1 compra';
+      return '<div class="rel-item">'+
+        '<div class="rel-lin"><span class="rel-nome">'+i.nome+'</span><span class="rel-n">'+i.n+'×</span></div>'+
+        '<div class="rel-bar"><i style="width:'+pct+'%"></i></div>'+
+        '<div class="rel-sub">'+i.cat+' · '+freq+' · última há '+i.diasDesde+'d</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  const maxCat = a.categorias[0] ? a.categorias[0].n : 1;
+  const cats = a.categorias.map(function(c){
+    const pct = Math.max(6, Math.round(c.n/maxCat*100));
+    return '<div class="rel-item"><div class="rel-lin"><span class="rel-nome">'+c.cat+'</span><span class="rel-n">'+c.n+'×</span></div>'+
+           '<div class="rel-bar cat"><i style="width:'+pct+'%"></i></div></div>';
+  }).join('');
+
+  const naHora = a.naHora.length
+    ? a.naHora.slice(0,8).map(function(i){
+        return '<button class="rel-chip" onclick="addDoRelatorio(\''+i.nome.replace(/'/g,"\\'")+'\')">'+
+               i.nome+' <b>+</b></button>';
+      }).join('')
+    : '<div class="rel-sub">Nada atrasado por enquanto. 👍</div>';
+
+  box.innerHTML =
+    '<div class="rel-cards">'+
+      '<div class="rel-card"><b>'+a.total+'</b><span>itens comprados</span></div>'+
+      '<div class="rel-card"><b>'+a.itens.length+'</b><span>produtos diferentes</span></div>'+
+      '<div class="rel-card"><b>'+a.porSemana+'</b><span>itens por semana</span></div>'+
+    '</div>'+
+
+    '<h4>Talvez esteja na hora de comprar</h4>'+
+    '<div class="rel-sub" style="margin-bottom:8px;">Passou do intervalo habitual. Toque para adicionar à lista.</div>'+
+    '<div class="rel-chips">'+naHora+'</div>'+
+
+    '<h4>Mais comprados</h4>'+ barras(a.mais, 12) +
+
+    '<h4>Menos comprados</h4>'+
+    '<div class="rel-sub" style="margin-bottom:8px;">Compras raras — vale conferir se ainda fazem sentido.</div>'+
+    barras(a.menos.filter(function(i){ return i.n <= 2; }), 8) +
+
+    '<h4>Por categoria</h4>'+ cats;
+}
+
+function addDoRelatorio(nome){
+  const k = chave(nome);
+  const iRem = removidos.indexOf(k);
+  const naBase = dadosBase.some(function(g){ return g.itens.some(function(it){ return chave(it.nome)===k; }); });
+  if(naBase && iRem>=0){ removidos.splice(iRem,1); }
+  else if(itemExiste(nome)){ toast(nome+' já está na lista'); return; }
+  else { extras.push({ nome:nome, qtd:1, extra:true, categoria:categorizar(nome) }); }
+  salvar(); render();
+  toast(nome+' adicionado');
+}
+
 function construir(){
   const map = {};
   dadosBase.forEach(function(g){ map[g.grupo] = g.itens.filter(function(it){ return removidos.indexOf(chave(it.nome))<0; }); });
@@ -797,7 +1008,9 @@ function criarItem(it){
     '<button class="apagar" aria-label="Remover">'+lixoSVG+'</button>';
   row.onclick = function(e){
     if(e.target.closest('.apagar')){ removerItem(it); return; }
+    const virouComprado = !estado[key];
     estado[key] = !estado[key];
+    if(virouComprado) registrarCompra(it);
     salvar(); render();
   };
   return row;
@@ -1042,7 +1255,7 @@ const DROP = ['online','digitando','audio','figurinha','sticker','imagem','video
 
 // ---- Ditado por voz (falar itens) ----
 let recog = null, micAtivo = false, faladosPend = [];
-const DICNORM = SUGESTOES.map(function(s){ return {n:normal(s.nome), nome:s.nome, cat:s.cat}; });
+const DICNORM = SUGESTOES.map(function(s){ return {n:normal(s.nome), f:fonetico(s.nome), nome:s.nome, cat:s.cat}; });
 
 function levenshtein(a,b){
   const m=a.length, n=b.length;
@@ -1058,31 +1271,110 @@ function levenshtein(a,b){
   return d[m][n];
 }
 
-function corrigirFala(frag){
-  let l = (frag||'').trim().replace(/\s+/g,' ');
-  if(!l) return null;
+// palavras que NÃO são itens de mercado (ruído do reconhecimento de voz)
+const NAO_ITEM = new Set(['mao','mae','pai','sim','nao','ok','okay','ta','tá','entao','pronto','acabou',
+  'obrigado','obrigada','oi','ola','tchau','isso','esse','essa','aquilo','tambem','mais','menos','agora',
+  'depois','antes','hoje','amanha','ontem','aqui','ali','la','tudo','nada','so','ja','ai','ah','eh','hum',
+  'deixa','coloca','poe','bota','anota','comprar','compra','preciso','quero','falta','faltando','lista',
+  'item','itens','vamos','vai','tem','tinha','acho','sei','ver','olha','espera','calma','certo','beleza',
+  'e','de','da','do','pra','para','com','sem','um','uma','o','a','os','as','no','na','ne','que','quando']);
+
+// aproxima a escrita do som (pt-BR), pra casar palavra ouvida errada com a certa
+function fonetico(s){
+  let x = normal(s);
+  x = x.replace(/[^a-z ]/g,'');
+  x = x.replace(/lh/g,'l').replace(/nh/g,'n').replace(/ch/g,'x').replace(/ph/g,'f');
+  x = x.replace(/qu/g,'k').replace(/gu/g,'g');
+  x = x.replace(/c([ei])/g,'s$1');            // ce/ci soam como s (cebola/sebola)
+  x = x.replace(/[cq]/g,'k').replace(/ss/g,'s');
+  x = x.replace(/z/g,'s').replace(/y/g,'i').replace(/w/g,'v').replace(/h/g,'');
+  x = x.replace(/(.)\1+/g,'$1');          // letras repetidas
+  x = x.replace(/[aeiou]+$/,'');           // final de vogal varia muito na fala
+  return x;
+}
+
+function levenshtein(a,b){
+  const m=a.length, n=b.length;
+  if(!m) return n; if(!n) return m;
+  const d=[]; for(let i=0;i<=m;i++){ d[i]=[i]; }
+  for(let j=0;j<=n;j++){ d[0][j]=j; }
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      const c = a[i-1]===b[j-1] ? 0 : 1;
+      d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+c);
+    }
+  }
+  return d[m][n];
+}
+
+function limparFrag(frag){
+  let l = (frag||'').trim().toLowerCase().replace(/\s+/g,' ');
+  l = l.replace(/^(me |pra |para |e |ai |ah |entao |tambem |depois )+/g,'');
+  l = l.replace(/^(compra[r]? |coloca[r]? |bota[r]? |poe |anota[r]? |preciso de |quero )+/,'');
+  const NUM = '(\\d+([.,]\\d+)?|um|uma|dois|duas|tres|três|quatro|cinco|seis|sete|oito|nove|dez|meio|meia)';
+  const UNI = '(kg|quilos?|g|gramas?|l|litros?|ml|pacotes?|caixas?|dúzias?|duzias?|unidades?|un|garrafas?|latas?|potes?|bandejas?|sacos?|barras?|cartelas?|fardos?)';
+  l = l.replace(new RegExp('^'+NUM+'\\s+'+UNI+'\\s+(de\\s+)?','i'), '');
+  l = l.replace(new RegExp('^'+NUM+'\\s*'+UNI+'?\\s+(de\\s+)?','i'), '');
+  l = l.replace(/^(o |a |os |as |um |uma |de |do |da )+/,'');
+  return l.trim();
+}
+
+// avalia um trecho contra o dicionário. Devolve {nome,cat,score}
+function avaliar(frag){
+  const l = limparFrag(frag);
+  if(!l || l.length < 2) return null;
   const nl = normal(l);
-  if(nl.length < 2) return null;
-  // 1) match exato no dicionário
-  for(let i=0;i<DICNORM.length;i++){ if(DICNORM[i].n===nl) return {nome:DICNORM[i].nome, cat:DICNORM[i].cat}; }
-  // 2) remove artigo/preposição no começo ("o abacate", "de cebola")
-  const semArt = nl.replace(/^(o |a |os |as |um |uma |uns |umas |de |do |da |dos |das )/,'');
-  if(semArt !== nl){
-    for(let i=0;i<DICNORM.length;i++){ if(DICNORM[i].n===semArt) return {nome:DICNORM[i].nome, cat:DICNORM[i].cat}; }
-  }
-  // 3) fuzzy (corrige fala errada, ex.: "banan" -> "Banana")
-  const alvo = semArt.length>=2 ? semArt : nl;
-  let melhor=null, best=99;
+  if(NAO_ITEM.has(nl)) return { rejeitado:true };
+
+  // 1) igual ao dicionário
   for(let i=0;i<DICNORM.length;i++){
-    const dist = levenshtein(alvo, DICNORM[i].n);
-    if(dist < best){ best=dist; melhor=DICNORM[i]; }
+    if(DICNORM[i].n === nl) return { nome:DICNORM[i].nome, cat:DICNORM[i].cat, score:1 };
   }
-  const limite = Math.max(2, Math.floor(alvo.length*0.34));
-  if(melhor && best <= limite) return {nome:melhor.nome, cat:melhor.cat};
-  // 4) sem correção: mantém o que foi falado, capitalizado
-  const base = semArt.length>=2 ? semArt : l;
-  const cap = base.charAt(0).toUpperCase()+base.slice(1);
-  return {nome:cap, cat:categorizar(cap)};
+  // 2) igual no som
+  const fl = fonetico(l);
+  for(let i=0;i<DICNORM.length;i++){
+    if(DICNORM[i].f && DICNORM[i].f === fl) return { nome:DICNORM[i].nome, cat:DICNORM[i].cat, score:.95 };
+  }
+  // 3) parecido: pontua pela letra escrita E pelo som, exige começo parecido
+  let melhor=null, melhorScore=0;
+  for(let i=0;i<DICNORM.length;i++){
+    const d = DICNORM[i];
+    const sTxt = 1 - (levenshtein(nl, d.n) / Math.max(nl.length, d.n.length));
+    const sFon = d.f ? 1 - (levenshtein(fl, d.f) / Math.max(fl.length||1, d.f.length||1)) : 0;
+    let sc = Math.max(sTxt, sFon);
+    if(nl[0] !== d.n[0]) sc -= 0.18;                       // começo diferente pesa contra
+    if(Math.abs(nl.length - d.n.length) > 4) sc -= 0.12;   // tamanho muito diferente também
+    if(sc > melhorScore){ melhorScore = sc; melhor = d; }
+  }
+  if(melhor && melhorScore >= 0.68){
+    return { nome:melhor.nome, cat:melhor.cat, score:melhorScore };
+  }
+  // 4) não reconhecido: entra, mas marcado pra conferir
+  const cap = l.charAt(0).toUpperCase()+l.slice(1);
+  return { nome:cap, cat:categorizar(cap), score:0, duvidoso:true };
+}
+
+// recebe as várias hipóteses do reconhecimento e escolhe a que bate com o dicionário
+function corrigirFala(frag, alternativas){
+  // se o que foi ouvido primeiro é claramente ruído, descarta e nem tenta alternativas
+  // (evita "sim" virar "Sal", por exemplo)
+  const pri = normal(limparFrag(frag||''));
+  if(!pri || pri.length < 2 || NAO_ITEM.has(pri)) return null;
+
+  const cands = [];
+  if(alternativas && alternativas.length){ alternativas.forEach(function(a){ cands.push(a); }); }
+  if(frag) cands.unshift(frag);
+
+  let melhor = null;
+  for(let i=0;i<cands.length;i++){
+    const r = avaliar(cands[i]);
+    if(!r) continue;
+    if(r.rejeitado){ if(!melhor) melhor = r; continue; }
+    if(!melhor || melhor.rejeitado || (r.score||0) > (melhor.score||0)) melhor = r;
+    if(melhor.score >= 0.95) break;
+  }
+  if(!melhor || melhor.rejeitado) return null;
+  return melhor;
 }
 
 function separarFala(texto){
@@ -1093,12 +1385,12 @@ function separarFala(texto){
     .filter(function(x){ return x.length; });
 }
 
-function addFalado(frag){
-  const r = corrigirFala(frag);
+function addFalado(frag, alternativas){
+  const r = corrigirFala(frag, alternativas);
   if(!r) return;
   const k = chave(r.nome);
   if(faladosPend.some(function(f){ return chave(f.nome)===k; })) return;   // já na temporária
-  faladosPend.push(r);
+  faladosPend.push({ nome:r.nome, cat:r.cat, duvidoso:!!r.duvidoso });
   renderFalados();
   try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
 }
@@ -1110,7 +1402,9 @@ function renderFalados(){
   } else {
     box.innerHTML = faladosPend.map(function(f,i){
       const jaTem = itemExiste(f.nome) ? ' · já tem' : '';
-      return '<div class="falado-item"><span class="fnome">'+f.nome+'</span>'+
+      const cls = f.duvidoso ? ' duvida' : '';
+      const marca = f.duvidoso ? '<span class="fduv" title="Não reconhecido">?</span>' : '';
+      return '<div class="falado-item'+cls+'">'+marca+'<span class="fnome">'+f.nome+'</span>'+
              '<span class="fcat">'+f.cat+jaTem+'</span>'+
              '<button class="falado-x" onclick="removerFalado('+i+')" aria-label="Remover">&times;</button></div>';
     }).join('');
@@ -1154,12 +1448,23 @@ function iniciarMic(){
   recog.lang = 'pt-BR';
   recog.continuous = true;
   recog.interimResults = true;
-  recog.maxAlternatives = 1;
+  recog.maxAlternatives = 5;
   recog.onresult = function(ev){
     let interim = '';
     for(let i=ev.resultIndex;i<ev.results.length;i++){
       const res = ev.results[i];
-      if(res.isFinal){ separarFala(res[0].transcript).forEach(addFalado); }
+      if(res.isFinal){
+        const alts = [];
+        for(let a=0;a<res.length;a++){ alts.push(res[a].transcript); }
+        // separa em itens usando a 1a hipótese, e leva as alternativas junto
+        const partes = separarFala(res[0].transcript);
+        partes.forEach(function(p, idx){
+          const altsDoTrecho = (partes.length === 1)
+            ? alts                                   // frase de 1 item: usa todas as hipóteses
+            : alts.map(function(t){ const q = separarFala(t); return q[idx]; }).filter(Boolean);
+          addFalado(p, altsDoTrecho);
+        });
+      }
       else { interim += res[0].transcript; }
     }
     document.getElementById('micInterim').textContent = interim;
