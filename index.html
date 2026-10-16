@@ -89,7 +89,12 @@
   .box{flex:0 0 27px;width:27px;height:27px;border:2px solid #c6cdbe;border-radius:9px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
   .box svg{width:16px;height:16px;opacity:0;transform:scale(.5);transition:all .2s;}
   .nome{flex:1;font-size:1.02rem;font-weight:500;transition:.2s;}
-  .qtd{font-size:.74rem;color:var(--pine);background:var(--amber-soft);padding:3px 10px;border-radius:20px;font-weight:700;white-space:nowrap;}
+  .qtd{font-size:.78rem;color:var(--pine);background:var(--amber-soft);padding:4px 9px;border-radius:20px;font-weight:700;white-space:nowrap;min-width:30px;text-align:center;cursor:text;}
+  .qtdbox{flex:0 0 auto;display:flex;align-items:center;gap:5px;}
+  .qbtn{flex:0 0 auto;width:28px;height:28px;border:1px solid var(--line);background:#fff;color:var(--pine);border-radius:9px;font-size:1.15rem;line-height:1;font-family:inherit;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+  .qbtn:active{background:var(--sage);}
+  .nome-edit{flex:1;min-width:0;font-family:inherit;font-size:1.02rem;font-weight:500;padding:6px 8px;border:1.5px solid var(--pine);border-radius:8px;background:#fff;color:var(--ink);}
+  .qtd-edit{width:66px;font-family:inherit;font-size:.86rem;font-weight:700;text-align:center;padding:5px 4px;border:1.5px solid var(--pine);border-radius:8px;background:#fff;color:var(--ink);}
   .apagar{flex:0 0 auto;background:none;border:none;color:#c9c2b3;padding:4px;cursor:pointer;display:flex;}
   .apagar svg{width:17px;height:17px;}
   .apagar:active{color:#d05a4a;}
@@ -124,8 +129,6 @@
   .addbar{background:var(--white);border-top:1px solid var(--line);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;gap:8px;box-shadow:0 -6px 20px rgba(18,58,40,.06);}
   .addbar input{border:1px solid var(--line);background:var(--paper);border-radius:13px;padding:13px 14px;font-size:1rem;font-family:inherit;color:var(--ink);outline:none;transition:border .15s;}
   .addbar input.nome-in{flex:1;min-width:0;}
-  .addbar input.qtd-in{flex:0 0 56px;width:56px;text-align:center;padding-left:6px;padding-right:6px;-moz-appearance:textfield;}
-  .addbar input.qtd-in::-webkit-outer-spin-button,.addbar input.qtd-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
   .addbar input:focus{border-color:var(--pine);}
   .addbar button{flex:0 0 auto;border:none;background:var(--pine);color:#fff;width:52px;border-radius:13px;font-size:1.6rem;font-weight:400;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;}
   .addbar button:active{background:var(--pine-2);transform:scale(.96);}
@@ -205,6 +208,10 @@
   .rel-per{display:flex;gap:6px;margin:4px 0 14px;}
   .rel-per button{flex:1;padding:9px 4px;border:1px solid var(--line);background:#fff;border-radius:10px;font-family:inherit;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;}
   .rel-per button.on{background:var(--pine);color:#fff;border-color:var(--pine);}
+  .rel-cats-filtro{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+  .rel-cats-filtro:empty{display:none;}
+  .rel-cats-filtro button{padding:5px 12px;border:1px solid var(--line);background:#fff;border-radius:18px;font-family:inherit;font-size:.76rem;font-weight:600;color:var(--muted);cursor:pointer;}
+  .rel-cats-filtro button.on{background:var(--amber-soft);color:var(--pine);border-color:var(--amber);}
   #relCorpo{overflow-y:auto;flex:1;padding-right:2px;}
   #relCorpo h4{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;color:var(--pine);margin:20px 0 4px;}
   .rel-cards{display:flex;gap:8px;}
@@ -271,10 +278,10 @@
     </div>
     <div class="sync-row">
       <input id="codigoInput" type="text" placeholder="código da lista (ex: casa-ls)" autocapitalize="off" autocorrect="off" spellcheck="false">
-      <button onclick="definirCodigo(document.getElementById('codigoInput').value)">Ligar</button>
+      <button onclick="definirCodigo(document.getElementById('codigoInput').value)">Conectar</button>
     </div>
     <div id="syncStatus" class="sync-status off">Sincronização desligada</div>
-    <div class="sync-dica">Use o mesmo código nos dois celulares para compartilhar a lista. Deixe vazio e toque em Ligar para desativar.</div>
+    <div class="sync-dica">Use o mesmo código nos dois celulares para compartilhar a lista. Deixe vazio e toque em Conectar para desativar.</div>
   </div>
 </div>
 
@@ -344,6 +351,7 @@
       <button data-d="180" onclick="renderRelatorio(180)">6 meses</button>
       <button data-d="0" onclick="renderRelatorio(0)">Tudo</button>
     </div>
+    <div id="relCatFiltro" class="rel-cats-filtro"></div>
     <div id="relCorpo"></div>
     <div class="modal-btns">
       <button class="mb-add" onclick="fecharRelatorio()">Fechar</button>
@@ -372,8 +380,6 @@
   <div class="addbar">
     <input id="novoItem" class="nome-in" type="text" placeholder="Adicionar item..." autocomplete="off"
            oninput="onInput()" onkeydown="if(event.key==='Enter')adicionar()">
-    <input id="novoQtd" class="qtd-in" type="number" min="1" inputmode="numeric" placeholder="1"
-           onkeydown="if(event.key==='Enter')adicionar()">
     <button onclick="adicionar()" aria-label="Adicionar">+</button>
   </div>
 </div>
@@ -459,6 +465,33 @@ const SUGESTOES = [];
   });
 })();
 
+// carrega itens customizados do localStorage
+(function(){
+  try{
+    var custom = JSON.parse(localStorage.getItem('dicCustom')||'[]');
+    custom.forEach(function(it){
+      if(it.nome && !SUGESTOES.some(function(s){return s.nome===it.nome;})){
+        SUGESTOES.push({nome:it.nome, cat:it.cat||'Outros'});
+      }
+    });
+  }catch(e){}
+})();
+
+function salvarDicCustom(nome, cat){
+  try{
+    var custom = JSON.parse(localStorage.getItem('dicCustom')||'[]');
+    if(!custom.some(function(it){return it.nome===nome;})){
+      custom.push({nome:nome, cat:cat||'Outros'});
+      localStorage.setItem('dicCustom', JSON.stringify(custom));
+      // atualiza listas em mem\u00f3ria
+      if(!SUGESTOES.some(function(s){return s.nome===nome;})){
+        SUGESTOES.push({nome:nome, cat:cat||'Outros'});
+        DICNORM.push({n:normal(nome), f:fonetico(nome), nome:nome, cat:cat||'Outros'});
+      }
+    }
+  }catch(e){}
+}
+
 function normal(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
 
 function itemExiste(nome){
@@ -508,7 +541,7 @@ function selecionarSugestao(nome, jaTem){
     inp.value = '';
   } else {
     inp.value = nome;
-    document.getElementById('novoQtd').focus();
+    adicionar();
   }
 }
 
@@ -603,7 +636,7 @@ function falarFila(grupoNome, fila, i){
   const v = vozPT(); if(v) u.voice = v;
   u.onend = function(){
     if(falandoId !== grupoNome) return;
-    setTimeout(function(){ falarFila(grupoNome, fila, i+1); }, 1000);   // pausa de 1s entre itens
+    setTimeout(function(){ falarFila(grupoNome, fila, i+1); }, 400);    // pausa de 0.4s entre itens
   };
   try{ window.speechSynthesis.speak(u); }catch(e){}
 }
@@ -673,7 +706,7 @@ function docAtual(){
   const d = {};
   Object.keys(estado).forEach(function(k){ d['m:'+k] = !!estado[k]; });
   extras.forEach(function(it){
-    d['e:'+chave(it.nome)] = { nome:it.nome, qtd:it.qtd, cat:it.categoria||categorizar(it.nome), del:false };
+    d['e:'+chave(it.nome)] = { nome:it.nome, qtd:it.qtd, cat:it.categoria||categorizar(it.nome), del:false, deBase:!!it.deBase };
   });
   removidos.forEach(function(k){ d['r:'+k] = true; });
   return d;
@@ -715,7 +748,7 @@ function aplicarDoc(doc){
     if(k.startsWith('m:')){ if(v) estado[k.slice(2)] = true; }
     else if(k.startsWith('e:')){
       if(v && !v.del && v.nome){
-        extras.push({ nome:v.nome, qtd:v.qtd, extra:true, categoria:v.cat||categorizar(v.nome) });
+        extras.push({ nome:v.nome, qtd:v.qtd, extra:true, deBase:!!v.deBase, categoria:v.cat||categorizar(v.nome) });
       }
     }
     else if(k.startsWith('r:')){ if(v) removidos.push(k.slice(2)); }
@@ -904,13 +937,39 @@ function abrirRelatorio(){
 function fecharRelatorio(){ document.getElementById('modalRel').classList.remove('show'); }
 
 let relPeriodo = 90;
-function renderRelatorio(dias){
-  relPeriodo = dias;
+var relCatFiltro = '';
+
+function renderRelatorio(dias, catF){
+  if(dias !== undefined) relPeriodo = dias;
+  if(catF !== undefined) relCatFiltro = catF;
   document.querySelectorAll('.rel-per button').forEach(function(b){
-    b.classList.toggle('on', parseInt(b.dataset.d,10) === dias);
+    b.classList.toggle('on', parseInt(b.dataset.d,10) === relPeriodo);
   });
-  const a = analisar(dias);
+  const a = analisar(relPeriodo);
   const box = document.getElementById('relCorpo');
+  const catBox = document.getElementById('relCatFiltro');
+
+  // chips de categoria
+  if(a.categorias.length > 1){
+    catBox.innerHTML = '<button class="'+(relCatFiltro===''?'on':'')+'" onclick="renderRelatorio(undefined,\'\')">Todas</button>' +
+      a.categorias.map(function(c){
+        return '<button class="'+(relCatFiltro===c.cat?'on':'')+'" onclick="renderRelatorio(undefined,\''+c.cat.replace(/'/g,"\\'")+'\')">'+c.cat+'</button>';
+      }).join('');
+  } else { catBox.innerHTML = ''; }
+
+  // filtrar itens por categoria
+  var itens = a.itens;
+  var mais = a.mais;
+  var menos = a.menos;
+  var naHora = a.naHora;
+  var total = a.total;
+  if(relCatFiltro){
+    itens = itens.filter(function(i){ return i.cat === relCatFiltro; });
+    mais = mais.filter(function(i){ return i.cat === relCatFiltro; });
+    menos = menos.filter(function(i){ return i.cat === relCatFiltro; });
+    naHora = naHora.filter(function(i){ return i.cat === relCatFiltro; });
+    total = 0; itens.forEach(function(i){ total += i.n; });
+  }
 
   if(a.total === 0){
     box.innerHTML = '<div class="rel-vazio">Ainda não há compras registradas neste período.<br><br>'+
@@ -918,7 +977,7 @@ function renderRelatorio(dias){
     return;
   }
 
-  const max = a.mais[0] ? a.mais[0].n : 1;
+  const max = mais[0] ? mais[0].n : 1;
   function barras(lista, limite){
     return lista.slice(0,limite).map(function(i){
       const pct = Math.max(6, Math.round(i.n/max*100));
@@ -938,31 +997,37 @@ function renderRelatorio(dias){
            '<div class="rel-bar cat"><i style="width:'+pct+'%"></i></div></div>';
   }).join('');
 
-  const naHora = a.naHora.length
-    ? a.naHora.slice(0,8).map(function(i){
+  const naHoraHtml = naHora.length
+    ? naHora.slice(0,8).map(function(i){
         return '<button class="rel-chip" onclick="addDoRelatorio(\''+i.nome.replace(/'/g,"\\'")+'\')">'+
                i.nome+' <b>+</b></button>';
       }).join('')
     : '<div class="rel-sub">Nada atrasado por enquanto. 👍</div>';
 
+  var porSemana = a.porSemana;
+  if(relCatFiltro){
+    var semanas = relPeriodo > 0 ? relPeriodo / 7 : ((Date.now() - Math.min.apply(null, itens.map(function(i){return i.ultima;}))) / 604800000 || 1);
+    porSemana = semanas > 0 ? (total / semanas).toFixed(1) : total;
+  }
+
   box.innerHTML =
     '<div class="rel-cards">'+
-      '<div class="rel-card"><b>'+a.total+'</b><span>itens comprados</span></div>'+
-      '<div class="rel-card"><b>'+a.itens.length+'</b><span>produtos diferentes</span></div>'+
-      '<div class="rel-card"><b>'+a.porSemana+'</b><span>itens por semana</span></div>'+
+      '<div class="rel-card"><b>'+total+'</b><span>itens comprados</span></div>'+
+      '<div class="rel-card"><b>'+itens.length+'</b><span>produtos diferentes</span></div>'+
+      '<div class="rel-card"><b>'+porSemana+'</b><span>itens por semana</span></div>'+
     '</div>'+
 
     '<h4>Talvez esteja na hora de comprar</h4>'+
     '<div class="rel-sub" style="margin-bottom:8px;">Passou do intervalo habitual. Toque para adicionar à lista.</div>'+
-    '<div class="rel-chips">'+naHora+'</div>'+
+    '<div class="rel-chips">'+naHoraHtml+'</div>'+
 
-    '<h4>Mais comprados</h4>'+ barras(a.mais, 12) +
+    '<h4>Mais comprados</h4>'+ barras(mais, 12) +
 
     '<h4>Menos comprados</h4>'+
     '<div class="rel-sub" style="margin-bottom:8px;">Compras raras — vale conferir se ainda fazem sentido.</div>'+
-    barras(a.menos.filter(function(i){ return i.n <= 2; }), 8) +
+    barras(menos.filter(function(i){ return i.n <= 2; }), 8) +
 
-    '<h4>Por categoria</h4>'+ cats;
+    (relCatFiltro ? '' : '<h4>Por categoria</h4>'+ cats);
 }
 
 function addDoRelatorio(nome){
@@ -995,25 +1060,149 @@ function badgeTxt(it){
   return String(it.qtd);
 }
 
+function escTxt(t){
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function criarItem(it){
   const key = chave(it.nome);
   const feito = !!estado[key];
-  const bt = badgeTxt(it);
+  const bt = badgeTxt(it) || '1';
   const row = document.createElement('div');
-  row.className = 'item' + (feito ? ' feito':'') + (it.extra ? ' extra':'');
+  row.className = 'item' + (feito ? ' feito':'') + (it.extra && !it.deBase ? ' extra':'');
   row.innerHTML =
     '<div class="box">'+checkSVG+'</div>' +
-    '<div class="nome">'+it.nome+'</div>' +
-    (bt ? '<div class="qtd">'+bt+'</div>' : '') +
+    '<div class="nome">'+escTxt(it.nome)+'</div>' +
+    '<div class="qtdbox">' +
+      '<button class="qbtn menos" aria-label="Menos">\u2212</button>' +
+      '<span class="qtd">'+escTxt(bt)+'</span>' +
+      '<button class="qbtn mais" aria-label="Mais">+</button>' +
+    '</div>' +
     '<button class="apagar" aria-label="Remover">'+lixoSVG+'</button>';
+
   row.onclick = function(e){
     if(e.target.closest('.apagar')){ removerItem(it); return; }
-    const virouComprado = !estado[key];
-    estado[key] = !estado[key];
-    if(virouComprado) registrarCompra(it);
-    salvar(); render();
+    if(e.target.closest('.qbtn.mais')){  ajustarQtd(it, +1); return; }
+    if(e.target.closest('.qbtn.menos')){ ajustarQtd(it, -1); return; }
+    if(e.target.closest('.qtd')){  editarQtd(it, row);  return; }
+    if(e.target.closest('.nome')){ editarNome(it, row); return; }
+    if(e.target.closest('.box')){                       // só a caixinha marca
+      const virouComprado = !estado[key];
+      estado[key] = !estado[key];
+      if(virouComprado) registrarCompra(it);
+      salvar(); render();
+      return;
+    }
   };
   return row;
+}
+
+// separa "2 kg" em numero + unidade, pra somar/subtrair mantendo a unidade
+function partesQtd(q){
+  if(q === undefined || q === null || q === '') return { n:1, un:'' };
+  const txt = String(q).trim();
+  const m = txt.match(/^(\d+(?:[.,]\d+)?)\s*(.*)$/);
+  if(!m) return { n:1, un:txt };                 // só texto, ex.: "a gosto"
+  return { n: parseFloat(m[1].replace(',', '.')), un: m[2].trim() };
+}
+
+function montarQtd(n, un){
+  let num = Math.round(n*100)/100;
+  if(num < 1) num = 1;
+  const txt = String(num).replace('.', ',');
+  return un ? (txt+' '+un) : txt;
+}
+
+function aplicarEdicao(it, novoNome, novaQtd){
+  const kAntigo = chave(it.nome);
+  const nome = (novoNome === undefined || novoNome === null) ? it.nome : String(novoNome).trim();
+  if(!nome) return;
+  const qtd = (novaQtd === undefined) ? it.qtd : novaQtd;
+  const kNovo = chave(nome);
+
+  // nome mudou e já existe outro item com esse nome
+  if(kNovo !== kAntigo && itemExiste(nome)){
+    toast(nome + ' já está na lista');
+    return;
+  }
+
+  const marcado = !!estado[kAntigo];
+
+  if(it.extra){
+    extras = extras.map(function(x){
+      if(chave(x.nome) !== kAntigo) return x;
+      return { nome:nome, qtd:qtd, extra:true, deBase:x.deBase,
+               categoria: x.categoria || categorizar(nome) };
+    });
+  } else {
+    // item da lista padrão: vira item editável, sem perder a origem
+    if(removidos.indexOf(kAntigo) < 0) removidos.push(kAntigo);
+    extras.push({ nome:nome, qtd:qtd, extra:true, deBase:true,
+                  categoria: it.categoria || categorizar(it.nome) });
+  }
+
+  if(kNovo !== kAntigo){
+    delete estado[kAntigo];
+    if(marcado) estado[kNovo] = true;
+  }
+  salvar(); render();
+}
+
+function ajustarQtd(it, passo){
+  const p = partesQtd(it.qtd);
+  aplicarEdicao(it, it.nome, montarQtd(p.n + passo, p.un));
+}
+
+function editarNome(it, row){
+  const alvo = row.querySelector('.nome');
+  if(!alvo || row.querySelector('.nome-edit')) return;
+  const inp = document.createElement('input');
+  inp.className = 'nome-edit';
+  inp.type = 'text';
+  inp.value = it.nome;
+  inp.setAttribute('autocomplete','off');
+  alvo.replaceWith(inp);
+  inp.focus(); inp.select();
+
+  let fechado = false;
+  function fechar(salvarAlt){
+    if(fechado) return; fechado = true;
+    const v = inp.value.trim();
+    if(salvarAlt && v && v !== it.nome) aplicarEdicao(it, v, it.qtd);
+    else render();
+  }
+  inp.onkeydown = function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); fechar(true); }
+    if(e.key === 'Escape'){ fechar(false); }
+  };
+  inp.onblur = function(){ fechar(true); };
+  inp.onclick = function(e){ e.stopPropagation(); };
+}
+
+function editarQtd(it, row){
+  const alvo = row.querySelector('.qtd');
+  if(!alvo || row.querySelector('.qtd-edit')) return;
+  const inp = document.createElement('input');
+  inp.className = 'qtd-edit';
+  inp.type = 'text';
+  inp.value = badgeTxt(it) || '1';
+  inp.setAttribute('autocomplete','off');
+  alvo.replaceWith(inp);
+  inp.focus(); inp.select();
+
+  let fechado = false;
+  function fechar(salvarAlt){
+    if(fechado) return; fechado = true;
+    const v = inp.value.trim();
+    if(salvarAlt && v) aplicarEdicao(it, it.nome, v);
+    else render();
+  }
+  inp.onkeydown = function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); fechar(true); }
+    if(e.key === 'Escape'){ fechar(false); }
+  };
+  inp.onblur = function(){ fechar(true); };
+  inp.onclick = function(e){ e.stopPropagation(); };
 }
 
 function ordena(itens){
@@ -1255,7 +1444,7 @@ const DROP = ['online','digitando','audio','figurinha','sticker','imagem','video
 
 // ---- Ditado por voz (falar itens) ----
 let recog = null, micAtivo = false, faladosPend = [];
-const DICNORM = SUGESTOES.map(function(s){ return {n:normal(s.nome), f:fonetico(s.nome), nome:s.nome, cat:s.cat}; });
+var DICNORM = SUGESTOES.map(function(s){ return {n:normal(s.nome), f:fonetico(s.nome), nome:s.nome, cat:s.cat}; });
 
 function levenshtein(a,b){
   const m=a.length, n=b.length;
@@ -1479,7 +1668,9 @@ function iniciarMic(){
     }
   };
   recog.onend = function(){
-    if(micAtivo){ try{ recog.start(); }catch(e){} }   // iOS corta sozinho: reinicia
+    if(micAtivo){                                      // iOS corta sozinho: reinicia rápido
+      setTimeout(function(){ if(micAtivo){ try{ recog.start(); }catch(e){} } }, 120);
+    }
     else { atualizarMicUI(); }
   };
   micAtivo = true;
@@ -1513,7 +1704,10 @@ function enviarFalados(){
     const naBase = dadosBase.some(function(g){ return g.itens.some(function(it){ return chave(it.nome)===k; }); });
     if(naBase && iRem>=0){ removidos.splice(iRem,1); novos++; return; }
     if(itemExiste(f.nome)) return;
-    extras.push({ nome:f.nome, qtd:1, extra:true, categoria:f.cat||categorizar(f.nome) });
+    var cat = f.cat||categorizar(f.nome);
+    extras.push({ nome:f.nome, qtd:1, extra:true, categoria:cat });
+    // salvar itens novos no dicionário customizado
+    if(!noDicionario(f.nome)){ salvarDicCustom(f.nome, cat); }
     novos++;
   });
   fecharFalar();
@@ -1674,9 +1868,21 @@ function mesclarImportado(dados){
   toast(novos>0 ? ('Lista importada · '+novos+' '+(novos===1?'item novo':'itens novos')) : 'Lista importada');
 }
 
-function adicionar(){
+function noDicionario(nome){
+  var nl = normal(nome);
+  return SUGESTOES.some(function(s){ return normal(s.nome) === nl; });
+}
+
+function sugerirSimilar(nome){
+  var r = avaliar(nome);
+  if(r && !r.rejeitado && !r.duvidoso && r.score >= 0.6 && normal(r.nome) !== normal(nome)){
+    return r.nome;
+  }
+  return null;
+}
+
+function adicionar(forcar){
   const inp = document.getElementById('novoItem');
-  const qi  = document.getElementById('novoQtd');
   const nome = inp.value.trim();
   document.getElementById('sugestoes').innerHTML = '';
   if(!nome) return;
@@ -1686,23 +1892,79 @@ function adicionar(){
   const iRem = removidos.indexOf(k);
   if(naBase && iRem>=0){         // item padrão removido antes: restaura
     removidos.splice(iRem,1);
-    inp.value=''; qi.value=''; inp.focus();
+    inp.value=''; inp.focus();
     salvar(); render();
     return;
   }
 
   if(itemExiste(nome)){          // já está na lista → avisa e não duplica
     toast(nome + ' já está na lista');
-    inp.value=''; qi.value=''; inp.focus();
+    inp.value=''; inp.focus();
     return;
   }
 
-  let q = parseInt(qi.value, 10);
-  if(!q || q < 1) q = 1;
-  extras.push({ nome:nome, qtd:q, extra:true, categoria:categorizar(nome) });
+  // se não está no dicionário e não foi forçado, sugerir/confirmar
+  if(!forcar && !noDicionario(nome)){
+    var similar = sugerirSimilar(nome);
+    if(similar){
+      // sugerir o item correto
+      mostrarConfirmItem(nome, similar);
+      return;
+    }
+    // sem sugestão: confirmar grafia
+    mostrarConfirmItem(nome, null);
+    return;
+  }
 
-  inp.value=''; qi.value=''; inp.focus();
+  var cat = categorizar(nome);
+  extras.push({ nome:nome, qtd:1, extra:true, categoria:cat });
+
+  // salvar no dicionário customizado
+  if(!noDicionario(nome)){
+    salvarDicCustom(nome, cat);
+  }
+
+  inp.value=''; inp.focus();
   salvar(); render();
+}
+
+function mostrarConfirmItem(nome, sugestao){
+  var box = document.getElementById('sugestoes');
+  box.innerHTML = '';
+  var div = document.createElement('div');
+  div.style.cssText = 'padding:10px 14px;background:#fffbee;border:1px solid var(--amber);border-radius:12px;margin-bottom:6px;';
+  if(sugestao){
+    div.innerHTML =
+      '<div style="font-size:.88rem;margin-bottom:8px;">Você quis dizer <b>'+escTxt(sugestao)+'</b>?</div>'+
+      '<div style="display:flex;gap:8px;">'+
+        '<button class="ci-btn ci-sim" style="flex:1;padding:8px;border:none;background:var(--green);color:#fff;border-radius:8px;font-weight:600;cursor:pointer;">Sim, usar '+escTxt(sugestao)+'</button>'+
+        '<button class="ci-btn ci-nao" style="flex:1;padding:8px;border:1px solid var(--line);background:#fff;border-radius:8px;font-weight:600;cursor:pointer;">Não, manter "'+escTxt(nome)+'"</button>'+
+      '</div>';
+    div.querySelector('.ci-sim').onclick = function(){
+      document.getElementById('novoItem').value = sugestao;
+      box.innerHTML = '';
+      adicionar(true);
+    };
+    div.querySelector('.ci-nao').onclick = function(){
+      box.innerHTML = '';
+      adicionar(true);
+    };
+  } else {
+    div.innerHTML =
+      '<div style="font-size:.88rem;margin-bottom:8px;"><b>'+escTxt(nome)+'</b> não está no dicionário. A escrita está correta?</div>'+
+      '<div style="display:flex;gap:8px;">'+
+        '<button class="ci-btn ci-sim" style="flex:1;padding:8px;border:none;background:var(--green);color:#fff;border-radius:8px;font-weight:600;cursor:pointer;">Sim, adicionar</button>'+
+        '<button class="ci-btn ci-cancel" style="flex:1;padding:8px;border:1px solid var(--line);background:#fff;border-radius:8px;font-weight:600;cursor:pointer;">Cancelar</button>'+
+      '</div>';
+    div.querySelector('.ci-sim').onclick = function(){
+      box.innerHTML = '';
+      adicionar(true);
+    };
+    div.querySelector('.ci-cancel').onclick = function(){
+      box.innerHTML = '';
+    };
+  }
+  box.appendChild(div);
 }
 
 function removerItem(it){
