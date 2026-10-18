@@ -35,7 +35,7 @@
     font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     background:var(--paper);
     color:var(--ink);
-    padding-bottom:150px;
+    padding-bottom:165px;
     -webkit-font-smoothing:antialiased;
   }
 
@@ -233,9 +233,11 @@
 
   /* ===== abas ===== */
   /* barra de abas no rodapé, pequena */
-  .abas{display:flex;background:var(--white);padding:2px 14px calc(6px + env(safe-area-inset-bottom));gap:6px;}
-  .abas button{flex:1;border:none;background:transparent;font-size:1.15rem;line-height:1;padding:7px 0 5px;border-radius:10px;cursor:pointer;filter:grayscale(.7);opacity:.55;transition:.18s;position:relative;}
-  .abas button.ativo{filter:none;opacity:1;background:var(--sage);box-shadow:inset 0 0 0 1.5px #c9d6c0;}
+  .abas{display:flex;background:linear-gradient(180deg,var(--pine) 0%,var(--pine-2) 100%);padding:6px 8px calc(6px + env(safe-area-inset-bottom));}
+  .abas button{flex:1;border:none;background:transparent;font-size:1.75rem;line-height:1;padding:9px 0 8px;margin:0 3px;border-radius:12px;cursor:pointer;filter:grayscale(.35) brightness(1.15);opacity:.75;transition:.18s;position:relative;}
+  .abas button + button::before{content:'';position:absolute;left:-4px;top:18%;bottom:18%;width:1px;background:rgba(255,255,255,.22);}
+  .abas button.ativo{filter:none;opacity:1;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.08));box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);}
+  .abas button.ativo::after{content:'';position:absolute;left:50%;top:2px;width:22px;height:3px;margin-left:-11px;border-radius:3px;background:var(--amber);}
   .so-lemb{display:none;}
   body.aba-lembretes .so-lista{display:none !important;}
   body.aba-lembretes .so-lemb{display:block;}
