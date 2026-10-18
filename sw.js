@@ -1,6 +1,6 @@
 // Service worker: network-first — sempre tenta a versão mais nova do servidor.
 // Se estiver sem internet, usa a cópia guardada (funciona offline no mercado).
-const CACHE = 'supermercado-v3';
+const CACHE = 'supermercado-v4';
 const ESSENCIAIS = [
   './',
   './index.html',

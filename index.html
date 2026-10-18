@@ -285,6 +285,17 @@
   .lb-dupla > div{flex:1;min-width:0;}
   .lb-limpa-data{background:none;border:none;color:var(--muted);font-family:inherit;font-size:.8rem;font-weight:600;padding:8px 0 0;cursor:pointer;text-decoration:underline;}
   .modal-card{max-height:90vh;overflow-y:auto;}
+
+  /* ===== mover itens entre abas ===== */
+  .acao.mover{grid-column:1 / -1;background:var(--sage);color:var(--pine);border:1.6px solid #c9d6c0;}
+  .mv-lab{font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:2px 0 7px;}
+  .mv-dest{display:flex;gap:7px;margin-bottom:12px;}
+  .mv-dest button{flex:1;padding:10px 4px;border:1.5px solid var(--line);background:#fff;border-radius:12px;font-family:inherit;font-size:.86rem;font-weight:700;color:var(--muted);cursor:pointer;}
+  .mv-dest button.on{background:var(--pine);border-color:var(--pine);color:#fff;}
+  .mv-atalhos{display:flex;gap:6px;flex-wrap:wrap;}
+  .mv-atalhos button{padding:6px 12px;border:1px solid var(--line);background:#fff;border-radius:18px;font-family:inherit;font-size:.78rem;font-weight:600;color:var(--pine);cursor:pointer;}
+  .mv-dica{font-size:.76rem;color:var(--muted);line-height:1.45;margin:-8px 0 14px;}
+  .mv-vazio{text-align:center;color:var(--muted);font-size:.9rem;padding:24px 0;}
 </style>
 </head>
 <body>
@@ -364,6 +375,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     Nova lista
   </button>
+  <button class="acao mover" onclick="abrirMover()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><path d="M21 3l-7 7"/><path d="M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg>
+    <span id="txtMover">Mover itens para outra aba</span>
+  </button>
 </div>
 <input id="fileInputPDF" type="file" accept="application/pdf,.pdf" style="display:none" onchange="lerArquivoPDF(event)">
 <input id="fileInputFoto" type="file" accept="image/*" style="display:none" onchange="lerImagem(event)">
@@ -378,6 +393,25 @@
   <div id="lbLista" class="lb-lista"></div>
   <div class="lb-rodape">
     <button class="link" onclick="limparConcluidos()">Apagar concluídos</button>
+  </div>
+</div>
+
+<div id="modalMover" class="modal">
+  <div class="modal-card modal-foto">
+    <h3>Mover itens</h3>
+    <div class="mv-lab">Mandar para:</div>
+    <div id="mvDestinos" class="mv-dest"></div>
+    <div class="mv-atalhos">
+      <button onclick="mvMarcar('todos')">Todos</button>
+      <button onclick="mvMarcar('horti')">Só hortifrúti</button>
+      <button onclick="mvMarcar('nenhum')">Nenhum</button>
+    </div>
+    <div id="mvLista" class="foto-lista"></div>
+    <div class="mv-dica">Só aparecem os itens que ainda não foram comprados. Eles saem desta lista e entram na outra.</div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="fecharMover()">Cancelar</button>
+      <button class="mb-add" id="btnMover" onclick="confirmarMover()">Mover</button>
+    </div>
   </div>
 </div>
 
@@ -2428,6 +2462,139 @@ function excluirLembreteModal(){
   lbExcluir(lbModalId);
   fecharModalLemb(); salvar(); render();
   toast('Lembrete excluído');
+}
+
+
+// ================== MOVER ITENS ENTRE ABAS ==================
+// Ex.: o que não achou no supermercado vai para a Feira, e lá continua pendente.
+let mvItens = [];
+let mvDestino = '';
+
+function abasCompra(){ return Object.keys(ABAS).filter(function(k){ return k !== 'lembretes'; }); }
+
+function abrirMover(){
+  const pend = [];
+  construir().forEach(function(g){
+    g.itens.forEach(function(it){
+      if(!estado[chave(it.nome)]) pend.push({ it:it, cat:g.grupo, sel:false });
+    });
+  });
+  mvItens = pend;
+  const outras = abasCompra().filter(function(k){ return k !== abaAtual; });
+  mvDestino = (abaAtual === 'mercado') ? 'feira' : 'mercado';
+  if(outras.indexOf(mvDestino) < 0) mvDestino = outras[0];
+  document.getElementById('mvDestinos').innerHTML = outras.map(function(k){
+    return '<button data-a="'+k+'">'+ABAS[k].icone+' '+ABAS[k].titulo+'</button>';
+  }).join('');
+  document.querySelectorAll('#mvDestinos button').forEach(function(b){
+    b.onclick = function(){ mvDestino = b.dataset.a; mvRender(); };
+  });
+  // indo para a Feira, já deixa marcado o que é de hortifrúti
+  if(mvDestino === 'feira') mvItens.forEach(function(m){ m.sel = (m.cat === 'Hortifrúti'); });
+  mvRender();
+  document.getElementById('modalMover').classList.add('show');
+}
+
+function fecharMover(){ document.getElementById('modalMover').classList.remove('show'); }
+
+function mvMarcar(q){
+  mvItens.forEach(function(m){ m.sel = q === 'todos' ? true : (q === 'horti' ? m.cat === 'Hortifrúti' : false); });
+  mvRender();
+}
+
+function mvRender(){
+  document.querySelectorAll('#mvDestinos button').forEach(function(b){ b.classList.toggle('on', b.dataset.a === mvDestino); });
+  const box = document.getElementById('mvLista');
+  box.innerHTML = '';
+  if(!mvItens.length){ box.innerHTML = '<div class="mv-vazio">Nenhum item pendente nesta lista.</div>'; }
+  mvItens.forEach(function(m){
+    const row = document.createElement('div');
+    row.className = 'foto-item' + (m.sel ? ' on' : '');
+    const q = badgeTxt(m.it);
+    row.innerHTML = '<div class="fbox">'+checkSVG+'</div><div class="fnome">'+escTxt(m.it.nome)+(q && q !== '1' ? ' <span style="color:var(--muted);font-weight:400;">('+escTxt(q)+')</span>' : '')+'</div><div class="fcat">'+escTxt(m.cat)+'</div>';
+    row.onclick = function(){ m.sel = !m.sel; row.classList.toggle('on', m.sel); mvBotao(); };
+    box.appendChild(row);
+  });
+  mvBotao();
+}
+
+function mvBotao(){
+  const n = mvItens.filter(function(m){ return m.sel; }).length;
+  const b = document.getElementById('btnMover');
+  b.textContent = 'Mover (' + n + ')' + (mvDestino ? ' → ' + ABAS[mvDestino].icone : '');
+  b.disabled = n === 0;
+}
+
+async function lerPayload(aba){
+  let raw = null;
+  try{ if(window.storage && window.storage.get){ const r = await window.storage.get(ABAS[aba].storage); if(r && r.value) raw = r.value; } }catch(e){}
+  if(!raw){ try{ raw = localStorage.getItem(ABAS[aba].storage); }catch(e){} }
+  let d = null;
+  try{ d = raw ? JSON.parse(raw) : null; }catch(e){}
+  d = d || {};
+  d.estado = d.estado || {}; d.extras = d.extras || []; d.removidos = d.removidos || [];
+  d.modo = d.modo || 'categoria'; d.ocultar = !!d.ocultar;
+  if(!d.doc || !d.doc.ts) d.doc = { d:{}, ts:{} };
+  return d;
+}
+
+async function gravarPayload(aba, d){
+  const txt = JSON.stringify(d);
+  try{ if(window.storage && window.storage.set){ await window.storage.set(ABAS[aba].storage, txt); return; } }catch(e){}
+  try{ localStorage.setItem(ABAS[aba].storage, txt); }catch(e){}
+}
+
+async function confirmarMover(){
+  const escolhidos = mvItens.filter(function(m){ return m.sel; });
+  if(!escolhidos.length || !mvDestino) return;
+  const dest = mvDestino;
+  const d = await lerPayload(dest);
+  const t = Date.now();
+  const baseDest = dest === 'mercado' ? dadosBase : [];
+  let movidos = 0;
+
+  escolhidos.forEach(function(m){
+    const it = m.it, k = chave(it.nome);
+    const naBase = baseDest.some(function(g){ return g.itens.some(function(b){ return chave(b.nome) === k; }); });
+    const iRem = d.removidos.indexOf(k);
+    const jaExtra = d.extras.some(function(x){ return chave(x.nome) === k; });
+
+    if(naBase && iRem >= 0){                       // item padrão do mercado que tinha sido tirado: volta
+      d.removidos.splice(iRem, 1);
+      d.doc.d['r:'+k] = false; d.doc.ts['r:'+k] = t;
+    } else if(!jaExtra && !(naBase && iRem < 0)){  // não existe lá: cria
+      const novo = { nome:it.nome, qtd:it.qtd || 1, extra:true, categoria:categorizar(it.nome) };
+      d.extras.push(novo);
+      d.doc.d['e:'+k] = { nome:novo.nome, qtd:novo.qtd, cat:novo.categoria, del:false, deBase:false };
+      d.doc.ts['e:'+k] = t;
+    }
+    // se já estava lá como comprado, volta a ficar pendente
+    if(d.estado[k]){ delete d.estado[k]; }
+    if(Object.prototype.hasOwnProperty.call(d.doc.d, 'm:'+k)){ d.doc.d['m:'+k] = false; d.doc.ts['m:'+k] = t; }
+    movidos++;
+  });
+
+  await gravarPayload(dest, d);
+
+  // envia já para a lista compartilhada da outra aba (se estiver sem internet, vai quando abrir a aba)
+  if(codigoLista && navigator.onLine){
+    try{
+      fetch('/api/lista/'+encodeURIComponent(codigoLista + ABAS[dest].sufixo), {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(d.doc)
+      }).catch(function(){});
+    }catch(e){}
+  }
+
+  // tira daqui
+  escolhidos.forEach(function(m){
+    const k = chave(m.it.nome);
+    if(m.it.extra){ extras = extras.filter(function(x){ return chave(x.nome) !== k; }); }
+    else if(removidos.indexOf(k) < 0){ removidos.push(k); }
+    delete estado[k];
+  });
+  fecharMover();
+  salvar(); render();
+  toast(movidos + ' ' + (movidos === 1 ? 'item movido' : 'itens movidos') + ' para ' + ABAS[dest].titulo);
 }
 
 (async function(){
