@@ -230,17 +230,73 @@
   .rel-chip{border:1px solid var(--amber);background:#fdf6e6;color:var(--pine);border-radius:20px;padding:7px 12px;font-family:inherit;font-size:.84rem;font-weight:600;cursor:pointer;}
   .rel-chip b{color:var(--amber);margin-left:2px;}
   .rel-vazio{text-align:center;color:var(--muted);font-size:.9rem;padding:30px 10px;line-height:1.5;}
+
+  /* ===== abas ===== */
+  .abas{display:flex;gap:6px;margin:-8px 0 16px;background:rgba(255,255,255,.10);border-radius:14px;padding:4px;}
+  .abas button{flex:1;border:none;background:transparent;font-size:1.35rem;line-height:1;padding:8px 0;border-radius:11px;cursor:pointer;filter:grayscale(.55);opacity:.7;transition:.18s;}
+  .abas button.ativo{background:#fff;filter:none;opacity:1;box-shadow:0 2px 6px rgba(0,0,0,.18);}
+  .so-lemb{display:none;}
+  body.aba-lembretes .so-lista{display:none !important;}
+  body.aba-lembretes .so-lemb{display:block;}
+  body.aba-lembretes .sugestoes{display:none;}
+
+  /* ===== lembretes (estilo iPhone) ===== */
+  .lb-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 22px 4px;}
+  .lb-lista{margin:12px 16px 0;background:var(--white);border:1px solid var(--line);border-radius:18px;overflow:hidden;}
+  .lb-vazio{text-align:center;color:var(--muted);font-size:.95rem;line-height:1.6;padding:46px 26px;}
+  .lb-item{border-bottom:1px solid var(--line);}
+  .lb-item:last-child{border-bottom:none;}
+  .lb-row{display:flex;align-items:flex-start;gap:13px;padding:13px 12px 13px 14px;}
+  .lb-circ{flex:0 0 26px;width:26px;height:26px;margin-top:1px;border:2px solid #b9c0b2;border-radius:50%;background:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.18s;}
+  .lb-circ i{width:14px;height:14px;border-radius:50%;background:transparent;transition:.18s;}
+  .lb-feito > .lb-row .lb-circ, .lb-sub.lb-feito .lb-circ{border-color:var(--green);}
+  .lb-feito > .lb-row .lb-circ i, .lb-sub.lb-feito .lb-circ i{background:var(--green);}
+  .lb-corpo{flex:1;min-width:0;}
+  .lb-tit{font-size:1.06rem;font-weight:600;color:var(--ink);line-height:1.3;word-wrap:break-word;cursor:text;}
+  .lb-nota{font-size:.88rem;color:var(--muted);margin-top:2px;line-height:1.35;}
+  .lb-data{font-size:.84rem;color:var(--muted);margin-top:3px;font-weight:500;}
+  .lb-data.atraso{color:#d0533f;}
+  .lb-feito > .lb-row .lb-tit{color:var(--muted);font-weight:500;}
+  .lb-lado{flex:0 0 auto;display:flex;align-items:center;gap:2px;margin-top:-2px;}
+  .lb-cont{font-size:.72rem;font-weight:700;color:var(--pine);background:var(--sage);padding:3px 8px;border-radius:20px;margin-right:2px;}
+  .lb-ico{width:30px;height:30px;border:none;background:none;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:9px;padding:0;}
+  .lb-ico:active{background:var(--sage);}
+  .lb-ico svg{width:19px;height:19px;}
+  .lb-chev svg{transition:transform .2s;}
+  .lb-fechado .lb-chev svg{transform:rotate(-90deg);}
+  .lb-subs{padding:0 0 6px 52px;}
+  .lb-fechado .lb-subs{display:none;}
+  .lb-sub{display:flex;align-items:center;gap:12px;padding:9px 12px 9px 0;border-top:1px solid #f0ece2;}
+  .lb-sub .lb-circ{flex-basis:23px;width:23px;height:23px;margin-top:0;}
+  .lb-sub .lb-circ i{width:12px;height:12px;}
+  .lb-stxt{flex:1;min-width:0;font-size:1rem;color:var(--ink);cursor:text;word-wrap:break-word;}
+  .lb-sub.lb-feito .lb-stxt{color:var(--muted);text-decoration:line-through;}
+  .lb-sub .apagar{padding:4px;}
+  .lb-addsub{display:flex;align-items:center;gap:12px;padding:9px 12px 9px 0;border-top:1px solid #f0ece2;}
+  .lb-addsub .mais{flex:0 0 23px;width:23px;height:23px;border-radius:50%;border:2px dashed #c6cdbe;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:1rem;line-height:1;}
+  .lb-addsub input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:1rem;color:var(--ink);padding:2px 0;}
+  .lb-addsub input::placeholder{color:#b3b8ab;}
+  .lb-edit{width:100%;font-family:inherit;font-size:1rem;font-weight:inherit;padding:5px 8px;border:1.5px solid var(--pine);border-radius:8px;background:#fff;color:var(--ink);}
+  .lb-rodape{display:flex;justify-content:center;padding:14px 0 0;}
+  body.aba-lembretes .sync-wrap{padding-top:18px;}
+  .lb-lab{display:block;font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:12px 0 5px;}
+  .lb-in{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:1rem;background:var(--paper);color:var(--ink);-webkit-appearance:none;}
+  .lb-dupla{display:flex;gap:10px;}
+  .lb-dupla > div{flex:1;min-width:0;}
+  .lb-limpa-data{background:none;border:none;color:var(--muted);font-family:inherit;font-size:.8rem;font-weight:600;padding:8px 0 0;cursor:pointer;text-decoration:underline;}
+  .modal-card{max-height:90vh;overflow-y:auto;}
 </style>
 </head>
 <body>
 <header>
+  <nav class="abas" id="abas"></nav>
   <div class="topo">
     <div class="titulo">
-      <div class="eyebrow">Lista de compras</div>
-      <h1>Supermercado</h1>
+      <div class="eyebrow" id="eyebrow">Lista de compras</div>
+      <h1 id="tituloAba">Supermercado</h1>
       <div class="sub" id="sub">Toque pra marcar o que já pegou</div>
     </div>
-    <div class="ring-wrap">
+    <div class="ring-wrap so-lista">
       <svg width="66" height="66" viewBox="0 0 66 66">
         <circle class="ring-bg" cx="33" cy="33" r="28" fill="none" stroke-width="6"/>
         <circle id="ring" class="ring-fg" cx="33" cy="33" r="28" fill="none" stroke-width="6"
@@ -249,13 +305,13 @@
       <div class="ring-txt"><b id="ringNum">0</b><span id="ringTot">de 0</span></div>
     </div>
   </div>
-  <div class="seg">
+  <div class="seg so-lista">
     <button id="btnCat" class="ativo" onclick="setModo('categoria')">Por categoria</button>
     <button id="btnAlf" onclick="setModo('alfabetico')">Alfabético</button>
   </div>
 </header>
 
-<div class="subbar">
+<div class="subbar so-lista">
   <div class="faltam" id="faltam">Faltam <b>0</b> itens</div>
   <button class="link" id="btnOcultar" onclick="toggleOcultar()">
     <svg id="olho" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -263,7 +319,7 @@
   </button>
 </div>
 
-<div class="falar-wrap" style="padding-bottom:0;">
+<div class="falar-wrap so-lista" style="padding-bottom:0;">
   <button class="rel-btn" onclick="abrirRelatorio()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     Relatórios de compra
@@ -285,13 +341,13 @@
   </div>
 </div>
 
-<div class="falar-wrap">
+<div class="falar-wrap so-lista">
   <button class="falar-btn" onclick="abrirFalar()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
     Falar itens
   </button>
 </div>
-<div class="acoes">
+<div class="acoes so-lista">
   <button class="acao foto" onclick="importarFoto()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
     Importar foto
@@ -312,7 +368,38 @@
 <input id="fileInputPDF" type="file" accept="application/pdf,.pdf" style="display:none" onchange="lerArquivoPDF(event)">
 <input id="fileInputFoto" type="file" accept="image/*" style="display:none" onchange="lerImagem(event)">
 
-<div id="lista"></div>
+<div id="lista" class="so-lista"></div>
+
+<div id="uiLemb" class="so-lemb">
+  <div class="lb-bar">
+    <div class="faltam" id="lbPend">0 pendentes</div>
+    <button class="link" onclick="toggleOcultar()"><span id="lbTxtOcultar">Ocultar concluídos</span></button>
+  </div>
+  <div id="lbLista" class="lb-lista"></div>
+  <div class="lb-rodape">
+    <button class="link" onclick="limparConcluidos()">Apagar concluídos</button>
+  </div>
+</div>
+
+<div id="modalLemb" class="modal">
+  <div class="modal-card">
+    <h3>Detalhes</h3>
+    <label class="lb-lab">Título</label>
+    <input id="lbEdTitulo" class="lb-in" type="text" autocomplete="off">
+    <label class="lb-lab">Observação</label>
+    <input id="lbEdNota" class="lb-in" type="text" placeholder="opcional" autocomplete="off">
+    <div class="lb-dupla">
+      <div><label class="lb-lab">Data</label><input id="lbEdData" class="lb-in" type="date"></div>
+      <div><label class="lb-lab">Hora</label><input id="lbEdHora" class="lb-in" type="time"></div>
+    </div>
+    <button class="lb-limpa-data" onclick="document.getElementById('lbEdData').value='';document.getElementById('lbEdHora').value='';">Sem data</button>
+    <div class="modal-btns" style="margin-top:16px;">
+      <button class="mb-ok" onclick="excluirLembreteModal()">Excluir</button>
+      <button class="mb-cancel" onclick="fecharModalLemb()">Cancelar</button>
+      <button class="mb-add" onclick="salvarModalLemb()">Salvar</button>
+    </div>
+  </div>
+</div>
 
 <div id="toast" class="toast">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -389,6 +476,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
 <script>
 const CIRC = 175.9;
+
+// ================== ABAS ==================
+// Cada aba é uma lista independente (guardada e sincronizada separadamente).
+// Mercado mantém a chave antiga 'lista-feira' para não perder os dados já salvos.
+const ABAS = {
+  mercado:   { icone:'🛒', titulo:'Supermercado', eyebrow:'Lista de compras', storage:'lista-feira',          sufixo:'' },
+  feira:     { icone:'🥬', titulo:'Feira',        eyebrow:'Lista de compras', storage:'lista-aba-feira',      sufixo:'-feira' },
+  farmacia:  { icone:'💊', titulo:'Farmácia',     eyebrow:'Lista de compras', storage:'lista-aba-farmacia',   sufixo:'-farmacia' },
+  lembretes: { icone:'📝', titulo:'Lembretes',    eyebrow:'Tarefas e recados', storage:'lista-aba-lembretes', sufixo:'-lembretes' }
+};
+let abaAtual = 'mercado';
+try{ const a = localStorage.getItem('lista-aba'); if(a && ABAS[a]) abaAtual = a; }catch(e){}
+function ehLemb(){ return abaAtual === 'lembretes'; }
+// itens padrão só existem na aba Mercado
+function base(){ return abaAtual === 'mercado' ? dadosBase : []; }
 
 const dadosBase = [
   { grupo:"Mercearia", itens:[
@@ -497,7 +599,7 @@ function normal(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u0
 function itemExiste(nome){
   const k = chave(nome);
   const naBaseAtiva = removidos.indexOf(k)<0 &&
-    dadosBase.some(function(g){return g.itens.some(function(it){return chave(it.nome)===k;});});
+    base().some(function(g){return g.itens.some(function(it){return chave(it.nome)===k;});});
   return naBaseAtiva || extras.some(function(it){return chave(it.nome)===k;});
 }
 
@@ -516,6 +618,7 @@ function buscar(q){
 const tagOk = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>';
 
 function onInput(){
+  if(ehLemb()) return;
   const q = document.getElementById('novoItem').value;
   const box = document.getElementById('sugestoes');
   const lista = buscar(q);
@@ -559,7 +662,7 @@ function fecharConfirm(){ document.getElementById('modalNova').classList.remove(
 function confirmarNova(){
   pararFala();
   removidos = [];
-  dadosBase.forEach(function(g){ g.itens.forEach(function(it){ removidos.push(chave(it.nome)); }); });
+  base().forEach(function(g){ g.itens.forEach(function(it){ removidos.push(chave(it.nome)); }); });
   extras = [];
   Object.keys(estado).forEach(function(k){ delete estado[k]; });
   fecharConfirm();
@@ -658,8 +761,8 @@ function chave(nome){ return nome.toLowerCase().normalize('NFD').replace(/[^a-z0
 
 async function salvarLocal(){
   const payload = JSON.stringify({estado, extras, removidos, modo, ocultar, doc:docLocal});
-  try{ if(window.storage && window.storage.set){ await window.storage.set('lista-feira', payload); return; } }catch(e){}
-  try{ localStorage.setItem('lista-feira', payload); }catch(e){}
+  try{ if(window.storage && window.storage.set){ await window.storage.set(ABAS[abaAtual].storage, payload); return; } }catch(e){}
+  try{ localStorage.setItem(ABAS[abaAtual].storage, payload); }catch(e){}
 }
 
 // toda mudança: carimba, grava no aparelho (offline) e agenda o envio
@@ -670,8 +773,8 @@ async function salvar(){
 }
 async function carregar(){
   let raw = null;
-  try{ if(window.storage && window.storage.get){ const r = await window.storage.get('lista-feira'); if(r && r.value) raw = r.value; } }catch(e){}
-  if(!raw){ try{ raw = localStorage.getItem('lista-feira'); }catch(e){} }
+  try{ if(window.storage && window.storage.get){ const r = await window.storage.get(ABAS[abaAtual].storage); if(r && r.value) raw = r.value; } }catch(e){}
+  if(!raw){ try{ raw = localStorage.getItem(ABAS[abaAtual].storage); }catch(e){} }
   if(raw){
     try{
       const d = JSON.parse(raw);
@@ -714,6 +817,7 @@ function docAtual(){
 
 // compara o estado atual com o último documento e carimba só o que mudou
 function carimbar(){
+  if(ehLemb()) return;                        // lembretes gravam direto no documento
   const agora = docAtual();
   const antes = docLocal.d || {};
   const t = Date.now();
@@ -739,6 +843,7 @@ function carimbar(){
 
 // reescreve estado/extras/removidos a partir do documento (depois de juntar)
 function aplicarDoc(doc){
+  if(ehLemb()){ docLocal = doc; return; }
   Object.keys(estado).forEach(function(k){ delete estado[k]; });
   extras = [];
   removidos = [];
@@ -778,20 +883,24 @@ function marcarSync(e){
   el.className = 'sync-status ' + e;
 }
 
+function codigoAba(){ return codigoLista ? (codigoLista + ABAS[abaAtual].sufixo) : ''; }
+
 async function sincronizar(forcar){
   if(!codigoLista) return;
+  const abaIni = abaAtual;
   if(!navigator.onLine){ marcarSync('offline'); return; }
   if(!syncPend && !forcar && (Date.now()-ultimoSyncOk) < 4000) return;
 
   marcarSync('enviando');
   try{
-    const r = await fetch('/api/lista/'+encodeURIComponent(codigoLista), {
+    const r = await fetch('/api/lista/'+encodeURIComponent(codigoAba()), {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify(docLocal)
     });
     if(!r.ok) throw new Error('http '+r.status);
     const servidor = await r.json();
+    if(abaIni !== abaAtual) return;            // trocou de aba no meio: ignora
     const juntado = juntar(docLocal, servidor);
 
     const mudou = JSON.stringify(juntado.d) !== JSON.stringify(docLocal.d);
@@ -812,7 +921,7 @@ function agendarSync(){
 }
 
 function definirCodigo(c){
-  const limpo = (c||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,40);
+  const limpo = (c||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,28);
   const inp = document.getElementById('codigoInput');
   if(limpo && limpo.length < 3){
     toast('O código precisa ter ao menos 3 letras');
@@ -1033,7 +1142,7 @@ function renderRelatorio(dias, catF){
 function addDoRelatorio(nome){
   const k = chave(nome);
   const iRem = removidos.indexOf(k);
-  const naBase = dadosBase.some(function(g){ return g.itens.some(function(it){ return chave(it.nome)===k; }); });
+  const naBase = base().some(function(g){ return g.itens.some(function(it){ return chave(it.nome)===k; }); });
   if(naBase && iRem>=0){ removidos.splice(iRem,1); }
   else if(itemExiste(nome)){ toast(nome+' já está na lista'); return; }
   else { extras.push({ nome:nome, qtd:1, extra:true, categoria:categorizar(nome) }); }
@@ -1043,7 +1152,7 @@ function addDoRelatorio(nome){
 
 function construir(){
   const map = {};
-  dadosBase.forEach(function(g){ map[g.grupo] = g.itens.filter(function(it){ return removidos.indexOf(chave(it.nome))<0; }); });
+  base().forEach(function(g){ map[g.grupo] = g.itens.filter(function(it){ return removidos.indexOf(chave(it.nome))<0; }); });
   extras.forEach(function(it){
     const cat = it.categoria || categorizar(it.nome);
     if(!map[cat]) map[cat] = [];
@@ -1212,6 +1321,8 @@ function ordena(itens){
 }
 
 function render(){
+  document.body.classList.toggle('aba-lembretes', ehLemb());
+  if(ehLemb()){ renderLembretes(); return; }
   const lista = document.getElementById('lista');
   lista.innerHTML = '';
   totalItens = 0;
@@ -1347,6 +1458,7 @@ function setModo(m){ modo = m; salvar(); render(); }
 
 function toggleOcultar(){
   ocultar = !ocultar;
+  if(ehLemb()){ salvar(); render(); return; }
   document.getElementById('txtOcultar').textContent = ocultar ? 'Mostrar comprados' : 'Ocultar comprados';
   const olho = document.getElementById('olho');
   olho.innerHTML = ocultar
@@ -1366,7 +1478,7 @@ function exportarPDF(){
   let y=M+6;
 
   doc.setFont('helvetica','bold'); doc.setFontSize(22); doc.setTextColor(18,58,40);
-  doc.text('Supermercado', M, y); y+=10;
+  doc.text(ABAS[abaAtual].titulo, M, y); y+=10;
   doc.setDrawColor(224,169,46); doc.setLineWidth(2.5); doc.line(M,y,M+64,y); y+=22;
   const dt=new Date();
   doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(130,140,130);
@@ -1401,9 +1513,9 @@ function exportarPDF(){
 
   // dados embutidos (invisíveis) para reimportação exata
   const payload = 'LSDATA::' + b64enc(JSON.stringify({ v:1, estado:estado, extras:extras }));
-  doc.setProperties({ title:'Supermercado', subject: payload, creator:'App Supermercado' });
+  doc.setProperties({ title:ABAS[abaAtual].titulo, subject: payload, creator:'App Supermercado' });
 
-  doc.save('lista-supermercado.pdf');
+  doc.save('lista-'+abaAtual+'.pdf');
   toast('PDF exportado');
 }
 
@@ -1701,7 +1813,7 @@ function enviarFalados(){
   faladosPend.forEach(function(f){
     const k = chave(f.nome);
     const iRem = removidos.indexOf(k);
-    const naBase = dadosBase.some(function(g){ return g.itens.some(function(it){ return chave(it.nome)===k; }); });
+    const naBase = base().some(function(g){ return g.itens.some(function(it){ return chave(it.nome)===k; }); });
     if(naBase && iRem>=0){ removidos.splice(iRem,1); novos++; return; }
     if(itemExiste(f.nome)) return;
     var cat = f.cat||categorizar(f.nome);
@@ -1796,7 +1908,7 @@ function confirmarFoto(){
   detectados.filter(function(d){return d.sel;}).forEach(function(d){
     const k = chave(d.nome);
     const iRem = removidos.indexOf(k);
-    const naBase = dadosBase.some(function(g){return g.itens.some(function(it){return chave(it.nome)===k;});});
+    const naBase = base().some(function(g){return g.itens.some(function(it){return chave(it.nome)===k;});});
     if(naBase && iRem>=0){ removidos.splice(iRem,1); novos++; return; }
     if(itemExiste(d.nome)) return;
     extras.push({ nome:d.nome, qtd:1, extra:true, categoria:d.cat||categorizar(d.nome) });
@@ -1854,7 +1966,7 @@ function mesclarImportado(dados){
     dados.extras.forEach(function(it){
       const k = chave(it.nome);
       const existe = extras.some(function(x){return chave(x.nome)===k;}) ||
-                     dadosBase.some(function(g){return g.itens.some(function(b){return chave(b.nome)===k;});});
+                     base().some(function(g){return g.itens.some(function(b){return chave(b.nome)===k;});});
       if(!existe){
         extras.push({ nome:it.nome, qtd:it.qtd||1, extra:true, categoria:it.categoria||categorizar(it.nome) });
         novos++;
@@ -1882,13 +1994,14 @@ function sugerirSimilar(nome){
 }
 
 function adicionar(forcar){
+  if(ehLemb()){ novoLembrete(); return; }
   const inp = document.getElementById('novoItem');
   const nome = inp.value.trim();
   document.getElementById('sugestoes').innerHTML = '';
   if(!nome) return;
 
   const k = chave(nome);
-  const naBase = dadosBase.some(function(g){return g.itens.some(function(it){return chave(it.nome)===k;});});
+  const naBase = base().some(function(g){return g.itens.some(function(it){return chave(it.nome)===k;});});
   const iRem = removidos.indexOf(k);
   if(naBase && iRem>=0){         // item padrão removido antes: restaura
     removidos.splice(iRem,1);
@@ -1975,8 +2088,353 @@ function removerItem(it){
   salvar(); render();
 }
 
-(async function(){
+// ================== TROCA DE ABAS ==================
+function montarAbas(){
+  const nav = document.getElementById('abas');
+  nav.innerHTML = Object.keys(ABAS).map(function(k){
+    return '<button data-aba="'+k+'" aria-label="'+ABAS[k].titulo+'" title="'+ABAS[k].titulo+'">'+ABAS[k].icone+'</button>';
+  }).join('');
+  nav.querySelectorAll('button').forEach(function(b){
+    b.onclick = function(){ trocarAba(b.dataset.aba); };
+  });
+}
+
+function aplicarCabecalho(){
+  const A = ABAS[abaAtual];
+  document.getElementById('eyebrow').textContent = A.eyebrow;
+  document.getElementById('tituloAba').textContent = A.titulo;
+  document.getElementById('novoItem').placeholder = ehLemb() ? 'Novo lembrete...' : 'Adicionar item...';
+  document.querySelectorAll('#abas button').forEach(function(b){
+    b.classList.toggle('ativo', b.dataset.aba === abaAtual);
+  });
+  document.body.classList.toggle('aba-lembretes', ehLemb());
+  // na aba Lembretes a caixa de sincronização vai para o fim da página
+  const sync = document.querySelector('.sync-wrap');
+  if(ehLemb()) document.getElementById('uiLemb').after(sync);
+  else document.querySelector('.falar-wrap.so-lista:not([style])').before(sync);
+}
+
+async function trocarAba(a){
+  if(!ABAS[a] || a === abaAtual) return;
+  pararFala();
+  if(syncTimer){ clearTimeout(syncTimer); syncTimer = null; }
+  if(syncPend && codigoLista) sincronizar(true);     // envia o que ficou pendente da aba anterior
+  abaAtual = a;
+  try{ localStorage.setItem('lista-aba', a); }catch(e){}
+  Object.keys(estado).forEach(function(k){ delete estado[k]; });
+  extras = []; removidos = []; modo = 'categoria'; ocultar = false;
+  docLocal = { d:{}, ts:{} }; syncPend = false; jaComemorou = true; lbFoco = null;
+  document.getElementById('novoItem').value = '';
+  document.getElementById('sugestoes').innerHTML = '';
+  aplicarCabecalho();
   await carregar();
+  document.getElementById('txtOcultar').textContent = ocultar ? 'Mostrar comprados' : 'Ocultar comprados';
+  render();
+  window.scrollTo(0,0);
+  if(codigoLista){ syncPend = true; sincronizar(true); }
+}
+
+// ================== LEMBRETES (estilo app Lembretes do iPhone) ==================
+// Documento da aba: 'L:<id>'        -> { t:título, n:observação, dt:'aaaa-mm-dd', hr:'hh:mm', f:feito, o:ordem }
+//                   'S:<id>:<sid>'  -> { t:texto, f:feito, o:ordem }      (subitens)
+// Apagar vira { del:true } para sumir também no outro celular.
+let lbFoco = null;              // lembrete com o campo "novo subitem" aberto
+let lbSemBlur = false;
+let lbFechados = new Set();
+try{ lbFechados = new Set(JSON.parse(localStorage.getItem('lemb-fechados')||'[]')); }catch(e){}
+function lbSalvarFechados(){ try{ localStorage.setItem('lemb-fechados', JSON.stringify(Array.from(lbFechados))); }catch(e){} }
+
+function lbId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function lbSet(k, v){ docLocal.d[k] = v; docLocal.ts[k] = Date.now(); syncPend = true; }
+function lbGet(k){ return docLocal.d[k]; }
+
+function lbLer(){
+  const L = {};
+  Object.keys(docLocal.d||{}).forEach(function(k){
+    if(k.indexOf('L:') !== 0) return;
+    const v = docLocal.d[k];
+    if(!v || v.del) return;
+    L[k.slice(2)] = Object.assign({ id:k.slice(2), subs:[] }, v);
+  });
+  Object.keys(docLocal.d||{}).forEach(function(k){
+    if(k.indexOf('S:') !== 0) return;
+    const v = docLocal.d[k];
+    if(!v || v.del) return;
+    const p = k.split(':');
+    if(L[p[1]]) L[p[1]].subs.push(Object.assign({ id:p[2], pai:p[1] }, v));
+  });
+  const arr = Object.keys(L).map(function(id){
+    L[id].subs.sort(function(a,b){ return (a.o||0)-(b.o||0); });
+    return L[id];
+  });
+  arr.sort(function(a,b){ return (a.f?1:0)-(b.f?1:0) || (a.o||0)-(b.o||0); });
+  return arr;
+}
+
+function lbHoje(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
+function lbDataInfo(dt, hr){
+  if(!dt) return null;
+  const p = dt.split('-');
+  const d = new Date(+p[0], +p[1]-1, +p[2]);
+  const dias = Math.round((d - lbHoje())/86400000);
+  let txt;
+  if(dias === 0) txt = 'Hoje';
+  else if(dias === 1) txt = 'Amanhã';
+  else if(dias === -1) txt = 'Ontem';
+  else if(dias === -2) txt = 'Anteontem';
+  else txt = p[2]+'/'+p[1]+'/'+p[0];
+  if(hr) txt += ', ' + hr;
+  let atraso = dias < 0;
+  if(dias === 0 && hr){
+    const h = hr.split(':'); const agora = new Date();
+    if(agora.getHours()*60+agora.getMinutes() > (+h[0])*60+(+h[1])) atraso = true;
+  }
+  return { txt:txt, atraso:atraso };
+}
+
+const lbIcoMais = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+const lbIcoInfo = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+const lbIcoChev = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+
+function renderLembretes(){
+  const box = document.getElementById('lbLista');
+  const todos = lbLer();
+  const pend = todos.filter(function(l){ return !l.f; }).length;
+  const visiveis = ocultar ? todos.filter(function(l){ return !l.f; }) : todos;
+
+  document.getElementById('lbPend').textContent = pend + (pend === 1 ? ' pendente' : ' pendentes');
+  document.getElementById('lbTxtOcultar').textContent = ocultar ? 'Mostrar concluídos' : 'Ocultar concluídos';
+  document.getElementById('sub').textContent = 'Toque no círculo para concluir';
+
+  if(!visiveis.length){
+    box.innerHTML = '<div class="lb-vazio">' + (todos.length ? 'Tudo concluído. 🎉' :
+      'Nenhum lembrete ainda.<br>Escreva um título no campo abaixo 👇<br>e depois adicione os subitens.') + '</div>';
+    return;
+  }
+
+  box.innerHTML = '';
+  visiveis.forEach(function(l){
+    const subs = ocultar ? l.subs.filter(function(s){ return !s.f; }) : l.subs;
+    const feitos = l.subs.filter(function(s){ return s.f; }).length;
+    const fechado = lbFechados.has(l.id) && lbFoco !== l.id;
+    const di = lbDataInfo(l.dt, l.hr);
+
+    const el = document.createElement('div');
+    el.className = 'lb-item' + (l.f ? ' lb-feito' : '') + (fechado ? ' lb-fechado' : '');
+    el.innerHTML =
+      '<div class="lb-row">' +
+        '<button class="lb-circ" aria-label="Concluir"><i></i></button>' +
+        '<div class="lb-corpo">' +
+          '<div class="lb-tit">' + escTxt(l.t || '') + '</div>' +
+          (l.n ? '<div class="lb-nota">' + escTxt(l.n) + '</div>' : '') +
+          (di ? '<div class="lb-data' + (di.atraso && !l.f ? ' atraso' : '') + '">' + di.txt + '</div>' : '') +
+        '</div>' +
+        '<div class="lb-lado">' +
+          (l.subs.length && fechado ? '<span class="lb-cont">' + feitos + '/' + l.subs.length + '</span>' : '') +
+          '<button class="lb-ico lb-add" aria-label="Adicionar subitem">' + lbIcoMais + '</button>' +
+          '<button class="lb-ico lb-info" aria-label="Detalhes">' + lbIcoInfo + '</button>' +
+          (l.subs.length ? '<button class="lb-ico lb-chev" aria-label="Recolher">' + lbIcoChev + '</button>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="lb-subs"></div>';
+
+    const subsBox = el.querySelector('.lb-subs');
+    subs.forEach(function(s){
+      const r = document.createElement('div');
+      r.className = 'lb-sub' + (s.f ? ' lb-feito' : '');
+      r.innerHTML = '<button class="lb-circ" aria-label="Concluir"><i></i></button>' +
+                    '<div class="lb-stxt">' + escTxt(s.t || '') + '</div>' +
+                    '<button class="apagar" aria-label="Apagar">' + lixoSVG + '</button>';
+      r.querySelector('.lb-circ').onclick = function(){ lbToggleSub(s, r); };
+      r.querySelector('.apagar').onclick = function(){ lbApagarSub(s); };
+      r.querySelector('.lb-stxt').onclick = function(){ lbEditarTexto(r.querySelector('.lb-stxt'), s.t, function(v){
+        if(!v){ lbApagarSub(s); return; }
+        const k = 'S:'+s.pai+':'+s.id; const at = lbGet(k) || {};
+        lbSet(k, Object.assign({}, at, { t:v })); salvar(); render();
+      }); };
+      subsBox.appendChild(r);
+    });
+
+    if(lbFoco === l.id){
+      const a = document.createElement('div');
+      a.className = 'lb-addsub';
+      a.innerHTML = '<span class="mais">+</span><input type="text" placeholder="Novo subitem (Enter p/ o próximo)" autocomplete="off" enterkeyhint="next">';
+      const inp = a.querySelector('input');
+      inp.onkeydown = function(e){
+        if(e.key === 'Enter'){
+          e.preventDefault();
+          const v = inp.value.trim();
+          lbSemBlur = true;
+          if(v){ lbNovoSub(l.id, v); salvar(); }
+          else { lbFoco = null; }
+          render();
+          lbSemBlur = false;
+          if(lbFoco) lbFocarAddSub();
+        }
+        if(e.key === 'Escape'){ lbSemBlur = true; lbFoco = null; render(); lbSemBlur = false; }
+      };
+      inp.onblur = function(){
+        if(lbSemBlur) return;
+        const v = inp.value.trim();
+        if(v){ lbNovoSub(l.id, v); salvar(); }
+        setTimeout(function(){
+          // se o foco não voltou para um campo de subitem, fecha
+          const ativo = document.activeElement;
+          if(!(ativo && ativo.closest && ativo.closest('.lb-addsub'))){ lbFoco = null; render(); }
+        }, 120);
+      };
+      subsBox.appendChild(a);
+    }
+
+    el.querySelector('.lb-row .lb-circ').onclick = function(){ lbToggle(l, el); };
+    el.querySelector('.lb-add').onclick = function(){
+      lbFoco = l.id; lbFechados.delete(l.id); lbSalvarFechados();
+      lbSemBlur = true; render(); lbSemBlur = false; lbFocarAddSub();
+    };
+    el.querySelector('.lb-info').onclick = function(){ abrirModalLemb(l.id); };
+    const chev = el.querySelector('.lb-chev');
+    if(chev) chev.onclick = function(){
+      if(lbFechados.has(l.id)) lbFechados.delete(l.id); else lbFechados.add(l.id);
+      lbSalvarFechados(); render();
+    };
+    el.querySelector('.lb-tit').onclick = function(){
+      lbEditarTexto(el.querySelector('.lb-tit'), l.t, function(v){
+        if(!v) { render(); return; }
+        const k = 'L:'+l.id; const at = lbGet(k) || {};
+        lbSet(k, Object.assign({}, at, { t:v })); salvar(); render();
+      });
+    };
+    box.appendChild(el);
+  });
+}
+
+function lbFocarAddSub(){
+  const i = document.querySelector('.lb-addsub input');
+  if(i){ i.focus(); try{ i.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){} }
+}
+
+function lbEditarTexto(alvo, valor, aoSalvar){
+  if(!alvo || alvo.querySelector('input')) return;
+  const inp = document.createElement('input');
+  inp.className = 'lb-edit'; inp.type = 'text'; inp.value = valor || '';
+  inp.setAttribute('autocomplete','off');
+  alvo.innerHTML = ''; alvo.appendChild(inp);
+  inp.focus(); inp.select();
+  let feito = false;
+  function fim(ok){
+    if(feito) return; feito = true;
+    const v = inp.value.trim();
+    if(ok && v !== (valor||'')) aoSalvar(v); else render();
+  }
+  inp.onkeydown = function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); fim(true); }
+    if(e.key === 'Escape'){ fim(false); }
+  };
+  inp.onblur = function(){ fim(true); };
+  inp.onclick = function(e){ e.stopPropagation(); };
+}
+
+function novoLembrete(){
+  const inp = document.getElementById('novoItem');
+  const t = inp.value.trim();
+  if(!t) return;
+  const id = lbId();
+  lbSet('L:'+id, { t:t, n:'', dt:'', hr:'', f:false, o:Date.now() });
+  inp.value = '';
+  lbFoco = id;                                   // já abre o campo para os subitens
+  salvar();
+  lbSemBlur = true; render(); lbSemBlur = false;
+  lbFocarAddSub();
+}
+
+function lbNovoSub(pai, t){
+  lbSet('S:'+pai+':'+lbId(), { t:t, f:false, o:Date.now() });
+}
+
+function lbToggle(l, el){
+  const k = 'L:'+l.id; const at = lbGet(k) || {};
+  const novo = !at.f;
+  lbSet(k, Object.assign({}, at, { f:novo }));
+  el.classList.toggle('lb-feito', novo);
+  try{ if(novo && navigator.vibrate) navigator.vibrate(20); }catch(e){}
+  salvar();
+  setTimeout(render, 650);                       // deixa ver o círculo marcado antes de reorganizar
+}
+
+function lbToggleSub(s, r){
+  const k = 'S:'+s.pai+':'+s.id; const at = lbGet(k) || {};
+  const novo = !at.f;
+  lbSet(k, Object.assign({}, at, { f:novo }));
+  r.classList.toggle('lb-feito', novo);
+  try{ if(novo && navigator.vibrate) navigator.vibrate(15); }catch(e){}
+  salvar();
+  setTimeout(render, ocultar ? 650 : 0);
+}
+
+function lbApagarSub(s){
+  lbSet('S:'+s.pai+':'+s.id, { del:true });
+  salvar(); render();
+}
+
+function lbExcluir(id){
+  lbSet('L:'+id, { del:true });
+  Object.keys(docLocal.d).forEach(function(k){
+    if(k.indexOf('S:'+id+':') === 0 && docLocal.d[k] && !docLocal.d[k].del) lbSet(k, { del:true });
+  });
+  if(lbFoco === id) lbFoco = null;
+}
+
+function limparConcluidos(){
+  const todos = lbLer();
+  let n = 0;
+  todos.forEach(function(l){ if(l.f) n++; else l.subs.forEach(function(s){ if(s.f) n++; }); });
+  if(!n){ toast('Nenhum concluído para apagar'); return; }
+  if(!confirm('Apagar '+n+' '+(n===1?'item concluído':'itens concluídos')+'?')) return;
+  todos.forEach(function(l){
+    if(l.f){ lbExcluir(l.id); return; }
+    l.subs.forEach(function(s){ if(s.f) lbSet('S:'+l.id+':'+s.id, { del:true }); });
+  });
+  salvar(); render();
+  toast(n+' '+(n===1?'item apagado':'itens apagados'));
+}
+
+let lbModalId = null;
+function abrirModalLemb(id){
+  const v = lbGet('L:'+id); if(!v) return;
+  lbModalId = id;
+  document.getElementById('lbEdTitulo').value = v.t || '';
+  document.getElementById('lbEdNota').value = v.n || '';
+  document.getElementById('lbEdData').value = v.dt || '';
+  document.getElementById('lbEdHora').value = v.hr || '';
+  document.getElementById('modalLemb').classList.add('show');
+}
+function fecharModalLemb(){ document.getElementById('modalLemb').classList.remove('show'); lbModalId = null; }
+function salvarModalLemb(){
+  if(!lbModalId) return;
+  const k = 'L:'+lbModalId; const at = lbGet(k) || {};
+  const t = document.getElementById('lbEdTitulo').value.trim();
+  if(!t){ toast('O título não pode ficar vazio'); return; }
+  lbSet(k, Object.assign({}, at, {
+    t:t,
+    n:document.getElementById('lbEdNota').value.trim(),
+    dt:document.getElementById('lbEdData').value || '',
+    hr:document.getElementById('lbEdHora').value || ''
+  }));
+  fecharModalLemb(); salvar(); render();
+}
+function excluirLembreteModal(){
+  if(!lbModalId) return;
+  if(!confirm('Excluir este lembrete e os subitens?')) return;
+  lbExcluir(lbModalId);
+  fecharModalLemb(); salvar(); render();
+  toast('Lembrete excluído');
+}
+
+(async function(){
+  montarAbas();
+  aplicarCabecalho();
+  await carregar();
+  jaComemorou = true;
   document.getElementById('txtOcultar').textContent = ocultar ? 'Mostrar comprados' : 'Ocultar comprados';
   document.getElementById('novoItem').addEventListener('blur', function(){
     setTimeout(function(){ document.getElementById('sugestoes').innerHTML=''; }, 150);
