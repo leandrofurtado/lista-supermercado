@@ -2295,12 +2295,21 @@ function renderLembretes(){
     if(lbFoco === l.id){
       const a = document.createElement('div');
       a.className = 'lb-addsub';
-      a.innerHTML = '<span class="mais">+</span><input type="text" placeholder="Novo subitem (Enter p/ o próximo)" autocomplete="off" enterkeyhint="next">';
+      a.innerHTML = '<span class="mais">+</span><input type="text" placeholder="Novo subitem (Enter p/ o próximo)" autocomplete="off" autocorrect="on" enterkeyhint="next" value="">';
       const inp = a.querySelector('input');
+      let usado = false;                         // o texto deste campo já foi salvo
+      function consumir(){
+        if(usado) return '';
+        const v = inp.value.trim();
+        usado = true;
+        inp.value = '';                          // limpa já, para o iPhone não reaproveitar o texto
+        return v;
+      }
       inp.onkeydown = function(e){
+        if(e.isComposing || e.keyCode === 229) return;   // ainda montando a palavra no teclado do iPhone
         if(e.key === 'Enter'){
           e.preventDefault();
-          const v = inp.value.trim();
+          const v = consumir();
           lbSemBlur = true;
           if(v){ lbNovoSub(l.id, v); salvar(); }
           else { lbFoco = null; }
@@ -2308,11 +2317,11 @@ function renderLembretes(){
           lbSemBlur = false;
           if(lbFoco) lbFocarAddSub();
         }
-        if(e.key === 'Escape'){ lbSemBlur = true; lbFoco = null; render(); lbSemBlur = false; }
+        if(e.key === 'Escape'){ usado = true; lbSemBlur = true; lbFoco = null; render(); lbSemBlur = false; }
       };
       inp.onblur = function(){
-        if(lbSemBlur) return;
-        const v = inp.value.trim();
+        if(lbSemBlur || usado || !inp.isConnected) return;   // campo já trocado por um novo: ignora
+        const v = consumir();
         if(v){ lbNovoSub(l.id, v); salvar(); }
         setTimeout(function(){
           // se o foco não voltou para um campo de subitem, fecha
